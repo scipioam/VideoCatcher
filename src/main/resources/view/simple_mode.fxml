@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXProgressBar?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<VBox alignment="CENTER" prefHeight="650.0" prefWidth="800.0" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pa.am.video_catcher.controller.SimpleModeController">
+    <ImageView fx:id="imageView" fitHeight="250.0" fitWidth="250.0" pickOnBounds="true" preserveRatio="true" />
+    <HBox alignment="CENTER" prefHeight="55.0" spacing="10.0">
+        <JFXTextField fx:id="tf_url" prefWidth="500.0" promptText="输入视频地址" styleClass="text-field-primary-prompt"/>
+        <JFXButton prefHeight="45.0" prefWidth="45.0" onMouseClicked="#click_download" styleClass="btn-primary">
+            <graphic><MaterialDesignIconView glyphName="DOWNLOAD" glyphSize="28" styleClass="icon"/></graphic>
+        </JFXButton>
+        <VBox.margin><Insets top="65.0" /></VBox.margin>
+    </HBox>
+    <JFXProgressBar fx:id="progressBar" prefHeight="7.0" prefWidth="450.0" />
+    <Label fx:id="label_progress"/>
+</VBox>

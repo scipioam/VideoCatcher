@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXProgressBar?>
+<?import javafx.geometry.Insets?>
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<?import com.jfoenix.controls.JFXTextField?>
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="pa.am.video_catcher.controller.M3u8Controller">
+
+    <HBox alignment="CENTER_LEFT" prefHeight="40.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="20.0">
+        <Label style="-fx-text-fill: RED;" text="*" />
+        <Label text="m3u8链接" />
+        <JFXTextField fx:id="tf_url" prefWidth="520.0" styleClass="text-field-primary">
+            <HBox.margin><Insets left="40.0" /></HBox.margin>
+        </JFXTextField>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" prefHeight="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="70.0">
+        <Label style="-fx-text-fill: RED;" text="*" />
+        <Label text="下载目录" />
+        <JFXButton fx:id="btn_chooseDir" prefHeight="45.0" prefWidth="110.0" text="选  择" styleClass="btn-secondary" onMouseClicked="#click_chooseDir">
+            <graphic><MaterialDesignIconView glyphName="FILE_DOCUMENT" glyphSize="24" styleClass="icon"/></graphic>
+            <HBox.margin><Insets left="30.0" /></HBox.margin>
+        </JFXButton>
+        <Label fx:id="label_path" styleClass="label-prompt" prefHeight="20.0" prefWidth="510.0">
+            <HBox.margin><Insets left="10.0" /></HBox.margin>
+        </Label>
+    </HBox>
+    <HBox alignment="CENTER_LEFT" prefHeight="40.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="200.0" AnchorPane.topAnchor="120.0">
+        <Label style="-fx-text-fill: RED;" text="*" />
+        <Label text="下载文件命名" />
+        <JFXTextField fx:id="tf_rename" prefWidth="300.0" styleClass="text-field-primary-prompt">
+            <HBox.margin><Insets left="20.0" /></HBox.margin>
+        </JFXTextField>
+    </HBox>
+
+    <Separator AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="190.0" />
+
+    <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="230.0">
+        <Label text="下载线程数" />
+        <JFXTextField fx:id="tf_threadLimit" prefWidth="100.0" promptText="默认20" styleClass="text-field-primary-prompt"/>
+        <Label text="线程数越多,下载越快,电脑也越卡" />
+    </HBox>
+    <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="285.0">
+        <Label text="重试次数   " />
+        <JFXTextField fx:id="tf_retryLimit" prefWidth="100.0" promptText="默认3" styleClass="text-field-primary-prompt"/>
+        <Label text="ts片段下载失败时的重试次数" />
+    </HBox>
+    <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="30.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="340.0">
+        <Label text="下载文件后缀" />
+        <JFXTextField fx:id="tf_fileSuffix" prefWidth="100.0" promptText="默认.mp4" styleClass="text-field-primary-prompt"/>
+    </HBox>
+
+    <Separator AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="430.0" />
+
+    <VBox alignment="CENTER" prefHeight="150.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0">
+        <JFXButton fx:id="btn_download" prefHeight="55.0" prefWidth="120.0" text="下   载" styleClass="btn-primary" onMouseClicked="#click_download">
+            <graphic><MaterialDesignIconView glyphName="DOWNLOAD" glyphSize="24" styleClass="icon"/></graphic>
+        </JFXButton>
+        <JFXProgressBar fx:id="progressBar" prefHeight="6.0" prefWidth="500.0">
+            <VBox.margin><Insets top="20.0" /></VBox.margin>
+        </JFXProgressBar>
+        <Label fx:id="label_progress">
+            <VBox.margin><Insets top="5.0" /></VBox.margin>
+        </Label>
+    </VBox>
+
+</AnchorPane>

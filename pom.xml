@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>pa.am</groupId>
+    <artifactId>video-catcher</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <description>Video Catcher for http link</description>
+
+    <developers>
+        <developer>
+            <id>1</id>
+            <name>Alan Scipio</name>
+        </developer>
+    </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+
+        <junit.version>4.11</junit.version>
+        <log4j.version>2.13.3</log4j.version>
+
+<!--        <jsoup.version>1.13.1</jsoup.version>-->
+<!--        <selenium.version>3.141.59</selenium.version>-->
+        <utils.verison>1.0.0</utils.verison>
+        <maven.model.version>3.6.3</maven.model.version>
+        <youtube-dl.version>1.1</youtube-dl.version>
+
+        <jfoenix.version>8.0.10</jfoenix.version>
+        <fontawesomefx.version>8.9</fontawesomefx.version>
+    </properties>
+
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>jitpack.io</id>-->
+<!--            <url>https://jitpack.io</url>-->
+<!--        </repository>-->
+<!--    </repositories>-->
+
+    <dependencies>
+        <!--junit-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- ===================== 日志 ===================== -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <!-- ===================== 功能库 ===================== -->
+        <!--Jsoup-->
+<!--        <dependency>-->
+<!--            <groupId>org.jsoup</groupId>-->
+<!--            <artifactId>jsoup</artifactId>-->
+<!--            <version>${jsoup.version}</version>-->
+<!--        </dependency>-->
+        <!--Selenium-->
+<!--        <dependency>-->
+<!--            <groupId>org.seleniumhq.selenium</groupId>-->
+<!--            <artifactId>selenium-java</artifactId>-->
+<!--            <version>${selenium.version}</version>-->
+<!--        </dependency>-->
+        <!--我自己的加解密模块-->
+        <dependency>
+            <groupId>pa.am</groupId>
+            <artifactId>scipio-utils-crypto</artifactId>
+            <version>${utils.verison}</version>
+        </dependency>
+        <!--我自己的网络模块-->
+        <dependency>
+            <groupId>pa.am</groupId>
+            <artifactId>scipio-utils-net</artifactId>
+            <version>${utils.verison}</version>
+        </dependency>
+        <!--我自己的通用工具模块-->
+        <dependency>
+            <groupId>pa.am</groupId>
+            <artifactId>scipio-utils-common</artifactId>
+            <version>${utils.verison}</version>
+        </dependency>
+        <!--maven辅助工具-->
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-model</artifactId>
+            <version>${maven.model.version}</version>
+        </dependency>
+        <!-- youtube-dl -->
+        <dependency>
+            <groupId>com.sapher</groupId>
+            <artifactId>youtubedl</artifactId>
+            <version>${youtube-dl.version}</version>
+        </dependency>
+        <!-- ===================== UI ===================== -->
+        <!--jfoenix-->
+        <dependency>
+            <groupId>com.jfoenix</groupId>
+            <artifactId>jfoenix</artifactId>
+            <version>${jfoenix.version}</version>
+        </dependency>
+        <!--我自己的易用UI功能库-->
+        <dependency>
+            <groupId>pa.am</groupId>
+            <artifactId>scipio-utils-jfoenix</artifactId>
+            <version>${utils.verison}</version>
+        </dependency>
+        <!-- FontAwesomeFX -->
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx</artifactId>
+            <version>${fontawesomefx.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>pa.am.bs_spider.App</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+        </plugins>
+<!--        <resources>-->
+<!--            <resource>-->
+<!--                <directory>src/main/resources</directory>-->
+<!--                <filtering>true</filtering>-->
+<!--            </resource>-->
+<!--        </resources>-->
+    </build>
+
+</project>

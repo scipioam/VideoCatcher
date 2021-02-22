@@ -1,0 +1,61 @@
+.background{
+    -fx-background-color: WHITE;
+}
+
+.btn-primary{
+    -jfx-button-type: FLAT;
+    -fx-background-color: #ffb471;
+    -fx-text-fill: white;
+}
+
+.btn-secondary{
+    -jfx-button-type: FLAT;
+    -fx-background-color: #adbed2;
+    -fx-text-fill: white;
+}
+
+/*.toggle-btn {*/
+/*    -jfx-toggle-color: #ffc952;*/
+/*    -jfx-toggle-line-color: #ffc952;*/
+/*}*/
+
+.tab-header-background{
+    -fx-background-color: #ffb471;
+}
+
+.cb {
+    -jfx-focus-color: #ffb471;
+}
+
+.icon{
+    -fx-fill: WHITE;
+}
+
+.table-column{
+    -fx-alignment: CENTER;
+}
+
+.text-field-primary {
+    -jfx-focus-color: #ffb471;
+}
+
+/*.text-field-secondary {*/
+/*    -jfx-focus-color: #adbed2;*/
+/*}*/
+
+.text-field-primary-prompt{
+    -jfx-focus-color: #ffb471;
+    -fx-prompt-text-fill: GREY;
+}
+
+.jfx-combo-box{
+    -jfx-focus-color:ffb471;
+}
+
+.label-prompt {
+    -fx-text-fill: GREY;
+}
+
+.jfx-progress-bar > .bar {
+    -fx-background-color: #ffb471;
+}

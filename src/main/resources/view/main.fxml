@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.StackPane?>
+
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.MenuItem?>
+<StackPane fx:id="rootPane" prefHeight="680.0" prefWidth="800.0" styleClass="background" stylesheets="/css/main.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pa.am.video_catcher.controller.MainController">
+    <AnchorPane fx:id="contentPane">
+        <MenuBar prefHeight="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <Menu mnemonicParsing="false" text="设 置">
+                <MenuItem fx:id="menuItem_switchMode" mnemonicParsing="false" onAction="#menu_switchMode" text="进入极简模式" />
+                <MenuItem mnemonicParsing="false" onAction="#menu_setLaunchPane" text="设置启动界面" />
+            </Menu>
+            <Menu mnemonicParsing="false" text="帮 助">
+                <MenuItem mnemonicParsing="false" onAction="#menu_about" text="关 于" />
+                <MenuItem mnemonicParsing="false" onAction="#menu_exit" text="退出程序" />
+            </Menu>
+        </MenuBar>
+
+<!--        <JFXTabPane fx:id="tabPane" AnchorPane.bottomAnchor="0.0" AnchorPane.topAnchor="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">-->
+<!--            <Tab fx:id="tab_videoDown" text="通用下载" />-->
+<!--            <Tab fx:id="tab_m3u8" text="m3u8下载" />-->
+<!--            <Tab fx:id="tab_bili" text="B站下载" />-->
+<!--        </JFXTabPane>-->
+    </AnchorPane>
+</StackPane>
