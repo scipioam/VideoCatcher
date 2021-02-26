@@ -1,8 +1,8 @@
 import org.junit.Test;
-import pa.am.video_catcher.catcher.DownloadListener;
-import pa.am.video_catcher.catcher.M3u8Catcher;
-import pa.am.video_catcher.catcher.bean.ErrorVO;
-import pa.am.video_catcher.catcher.bean.M3u8VO;
+import pa.am.video_catcher.catcher.m3u8.DownloadListener;
+import pa.am.video_catcher.catcher.m3u8.M3u8Catcher;
+import pa.am.video_catcher.catcher.m3u8.bean.ErrorVO;
+import pa.am.video_catcher.catcher.m3u8.bean.M3u8VO;
 
 import java.util.List;
 

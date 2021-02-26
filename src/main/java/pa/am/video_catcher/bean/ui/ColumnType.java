@@ -16,7 +16,8 @@ public enum ColumnType {
     NOTE, //关于分辨率的简要信息
     RESOLUTION, //分辨率
     EXTENSION,//文件类型（后缀）
-    FPS//帧率
+    FPS,//帧率
+    CODEC//编码格式
 
 
 }

@@ -25,7 +25,7 @@
         <junit.version>4.13.2</junit.version>
         <log4j.version>2.13.3</log4j.version>
 
-<!--        <jsoup.version>1.13.1</jsoup.version>-->
+        <jsoup.version>1.13.1</jsoup.version>
 <!--        <selenium.version>3.141.59</selenium.version>-->
         <utils.verison>1.0.0</utils.verison>
         <maven.model.version>3.6.3</maven.model.version>
@@ -63,11 +63,11 @@
         </dependency>
         <!-- ===================== 功能库 ===================== -->
         <!--Jsoup-->
-<!--        <dependency>-->
-<!--            <groupId>org.jsoup</groupId>-->
-<!--            <artifactId>jsoup</artifactId>-->
-<!--            <version>${jsoup.version}</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>${jsoup.version}</version>
+        </dependency>
         <!--Selenium-->
 <!--        <dependency>-->
 <!--            <groupId>org.seleniumhq.selenium</groupId>-->

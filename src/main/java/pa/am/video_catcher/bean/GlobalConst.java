@@ -16,6 +16,8 @@ public class GlobalConst {
 
     public static final long THREAD_KEEP_TIME = 2000L; //耗时子线程执行时间不低于2秒
 
+    public static final String FFMPEG_PATH = ".\\ffmpeg\\ffmpeg.exe";//ffmpeg路径
+
     //***************************** 爬取网站相关 *****************************
     public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36";//ua的值\
 

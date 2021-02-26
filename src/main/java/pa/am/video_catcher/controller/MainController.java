@@ -87,6 +87,7 @@ public class MainController extends BaseController {
     @Override
     public void onStop() {
         videoDownView.getController().onStop();
+        biliView.getController().onStop();
         threadPool.shutdownNow();
     }
 

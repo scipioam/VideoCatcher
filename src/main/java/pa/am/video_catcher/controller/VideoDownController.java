@@ -17,7 +17,6 @@ import pa.am.scipioutils.jfoenix.DialogHelper;
 import pa.am.scipioutils.jfoenix.ProgressDialog;
 import pa.am.scipioutils.jfoenix.fxml.FxmlView;
 import pa.am.scipioutils.jfoenix.snackbar.JFXSnackbarHelper;
-import pa.am.scipioutils.jfoenix.util.FileChooseHelper;
 import pa.am.video_catcher.bean.ui.*;
 import pa.am.video_catcher.bean.video.FormatInfo;
 import pa.am.video_catcher.bean.video.FormatType;
@@ -29,7 +28,6 @@ import pa.am.video_catcher.task.VideoDownloadTask;
 import pa.am.video_catcher.ui.NumericTextFieldOperator;
 import pa.am.video_catcher.util.TableViewInit;
 
-import java.io.File;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -84,7 +82,6 @@ public class VideoDownController extends AbstractPageController {
     private JFXTreeTableColumn<FormatModel,String> tc_resolution;
 
     private final Setting setting = new Setting();
-    private File downloadDir;//下载目录
     private FxmlView advancedSettingView;//高级设置view
     private DownloadFormatChangeListener dfChangeListener;
     private final ObservableList<FormatModel> formatModelList = FXCollections.observableArrayList();
@@ -165,8 +162,7 @@ public class VideoDownController extends AbstractPageController {
      */
     @FXML
     private void click_chooseDir() {
-        downloadDir = FileChooseHelper.chooseDir(rootPane.getScene().getWindow(),"选择下载目录");
-        label_path.setText( downloadDir==null ? null : downloadDir.getAbsolutePath() );
+        chooseDir(label_path);
     }
 
     /**
@@ -259,9 +255,8 @@ public class VideoDownController extends AbstractPageController {
     /**
      * 更新视频信息
      * @param info 信息对象
-     * @param progressDialog 进度对话框
      */
-    public void updateVideoInfo(VideoInfo info, ProgressDialog progressDialog) {
+    public void updateVideoInfo(boolean isYoutubeUrl, VideoInfo info, ProgressDialog progressDialog) {
         //获取成功
         if(info!=null) {
             label_title.setText(info.title);
@@ -272,7 +267,7 @@ public class VideoDownController extends AbstractPageController {
             formatModelList.clear();
             List<VideoFormat> formatList = info.formats;
             for(VideoFormat data : formatList) {
-                FormatModel vo = FormatModel.buildVO(data);
+                FormatModel vo = FormatModel.build(isYoutubeUrl,data);
                 formatModelList.add(vo);
             }
         }

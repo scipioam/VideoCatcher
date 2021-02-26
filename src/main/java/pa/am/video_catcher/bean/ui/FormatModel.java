@@ -3,6 +3,7 @@ package pa.am.video_catcher.bean.ui;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import com.sapher.youtubedl.mapper.VideoFormat;
 import javafx.beans.property.*;
+import pa.am.video_catcher.catcher.bilibili.bean.media_play.Media;
 
 /**
  * @author Alan Min
@@ -13,7 +14,7 @@ public class FormatModel extends RecursiveTreeObject<FormatModel> {
     //格式id
     private StringProperty formatId;
 
-    //关于分辨率的简要信息
+    //关于分辨率的简要信息（b站时为音视频类型）
     private StringProperty note;
 
     //分辨率
@@ -28,24 +29,42 @@ public class FormatModel extends RecursiveTreeObject<FormatModel> {
     //格式信息
     private StringProperty formatInfo;
 
-    //视频帧率（仅音频时为0）
+    //视频帧率（仅音频时为0）(youtube-dl专用)
     private IntegerProperty fps;
 
-    public static FormatModel buildVO(VideoFormat originalData) {
-        FormatModel vo = new FormatModel();
-        vo.setFormatId(originalData.formatId);
-        vo.setFormatInfo(originalData.format);
-        vo.setExtension(originalData.ext);
-        vo.setNote(originalData.formatNote);
-        vo.setFps(originalData.fps);
-        vo.setFileSize(originalData.filesize);
+    //作为b站视频信息时，与之对应的av号
+    private LongProperty aid;
+
+    //作为b站视频信息时，与之对应的分p信息
+    private LongProperty cid;
+
+    //编码格式（b站专用）
+    private StringProperty codec;
+
+    public static FormatModel build(boolean isYoutubeUrl, VideoFormat originalData) {
+        FormatModel model = new FormatModel();
+        model.setFormatId(originalData.formatId);
+        model.setFormatInfo(originalData.format);
+        model.setExtension(originalData.ext);
+        model.setNote(originalData.formatNote);
+        model.setFps(originalData.fps);
+        model.setFileSize(originalData.filesize);
         if(originalData.width==0 && originalData.height==0) {
-            vo.setResolution("audio only");
+            model.setResolution(isYoutubeUrl ? "纯音频" : "unknown");
         }
         else {
-            vo.setResolution(originalData.width+"x"+originalData.height);
+            model.setResolution(originalData.width+"x"+originalData.height);
         }
-        return vo;
+        return model;
+    }
+
+    public static FormatModel build(Media media, String resolutionInfo) {
+        FormatModel model = new FormatModel();
+        model.setFormatId(media.getId().toString());
+        model.setCodec(media.getCodecs());
+        model.setResolution(resolutionInfo);
+        model.setNote( media.getMimeType().contains("video") ? "视频" : "音频" );
+        return model;
     }
 
     /**
@@ -152,6 +171,42 @@ public class FormatModel extends RecursiveTreeObject<FormatModel> {
 
     public void setFps(int fps) {
         this.fps = intSet(this.fps,fps);
+    }
+
+    public long getAid() {
+        return longGet(aid);
+    }
+
+    public LongProperty aidProperty() {
+        return aid;
+    }
+
+    public void setAid(long aid) {
+        this.aid = longSet(this.aid,aid);
+    }
+
+    public long getCid() {
+        return longGet(cid);
+    }
+
+    public LongProperty cidProperty() {
+        return cid;
+    }
+
+    public void setCid(long cid) {
+        this.cid = longSet(this.cid,cid);
+    }
+
+    public String getCodec() {
+        return strGet(codec);
+    }
+
+    public StringProperty codecProperty() {
+        return codec;
+    }
+
+    public void setCodec(String codec) {
+        this.codec = strSet(this.codec,codec);
     }
 
     //================================================

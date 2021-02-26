@@ -38,13 +38,13 @@ public class GetVideoInfoTask extends AbstractTask{
             e.printStackTrace();
         }
         //结束工作
-        finishJob(startTime,videoInfo);
+        finishJob(startTime,videoInfo,url.contains("youtube.com"));
         return null;
     }
 
-    private void finishJob(long startTime, final VideoInfo info) {
+    private void finishJob(long startTime, final VideoInfo info, final boolean isYoutubeUrl) {
         keepThreadRunTime(startTime, GlobalConst.THREAD_KEEP_TIME);
-        Platform.runLater(()->controller.updateVideoInfo(info,progressDialog));
+        Platform.runLater(()->controller.updateVideoInfo(isYoutubeUrl,info,progressDialog));
     }
 
 }

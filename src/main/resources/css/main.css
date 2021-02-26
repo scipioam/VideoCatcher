@@ -59,3 +59,8 @@
 .jfx-progress-bar > .bar {
     -fx-background-color: #ffb471;
 }
+
+.toggle-btn {
+    -jfx-toggle-color: #ffc952;
+    -jfx-toggle-line-color: #ffc952;
+}

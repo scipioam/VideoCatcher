@@ -6,9 +6,9 @@ import org.apache.logging.log4j.LogManager;
 import pa.am.scipioutils.common.StringUtil;
 import pa.am.scipioutils.jfoenix.DialogHelper;
 import pa.am.video_catcher.bean.GlobalConst;
-import pa.am.video_catcher.catcher.DownloadListener;
-import pa.am.video_catcher.catcher.M3u8Catcher;
-import pa.am.video_catcher.catcher.bean.ErrorVO;
+import pa.am.video_catcher.catcher.m3u8.DownloadListener;
+import pa.am.video_catcher.catcher.m3u8.M3u8Catcher;
+import pa.am.video_catcher.catcher.m3u8.bean.ErrorVO;
 import pa.am.video_catcher.controller.M3u8Controller;
 
 import java.io.File;

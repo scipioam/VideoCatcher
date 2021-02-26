@@ -8,6 +8,7 @@ import pa.am.scipioutils.common.StringUtil;
 import pa.am.scipioutils.jfoenix.ProgressDialog;
 import pa.am.scipioutils.jfoenix.fxml.BaseController;
 import pa.am.scipioutils.jfoenix.snackbar.JFXSnackbarHelper;
+import pa.am.scipioutils.jfoenix.util.FileChooseHelper;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
@@ -22,7 +23,20 @@ public abstract class AbstractPageController extends BaseController {
     protected MainController mainController;
     protected StackPane rootPane;
 
+    protected File downloadDir;//下载目录
+
     //=========================================================================
+
+    /**
+     * 选择下载目录
+     * @param label_path 显示下载目录的文本，可为null
+     */
+    protected void chooseDir(Label label_path) {
+        downloadDir = FileChooseHelper.chooseDir(rootPane.getScene().getWindow(),"选择下载目录");
+        if(label_path!=null) {
+            label_path.setText( downloadDir==null ? null : downloadDir.getAbsolutePath() );
+        }
+    }
 
     /**
      * 必填项检查

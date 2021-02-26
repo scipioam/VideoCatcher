@@ -8,11 +8,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextFormatter;
 import pa.am.scipioutils.common.StringUtil;
 import pa.am.scipioutils.jfoenix.snackbar.JFXSnackbarHelper;
-import pa.am.scipioutils.jfoenix.util.FileChooseHelper;
 import pa.am.video_catcher.task.M3u8DownloadTask;
 import pa.am.video_catcher.ui.NumericTextFieldOperator;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -44,8 +42,6 @@ public class M3u8Controller extends AbstractPageController {
     @FXML
     private JFXProgressBar progressBar;//下载进度条
 
-    private File downloadDir;//下载目录
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         progressBar.setVisible(false);
@@ -66,8 +62,7 @@ public class M3u8Controller extends AbstractPageController {
      */
     @FXML
     private void click_chooseDir() {
-        downloadDir = FileChooseHelper.chooseDir(rootPane.getScene().getWindow(),"选择下载目录");
-        label_path.setText( downloadDir==null ? null : downloadDir.getAbsolutePath() );
+        chooseDir(label_path);
     }
 
     /**

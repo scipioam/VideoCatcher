@@ -50,6 +50,9 @@ public class TableViewInit {
                 prop = new SimpleStringProperty();
                 prop.set(vo.getFps()+"");
                 break;
+            case CODEC:
+                prop = vo.codecProperty();
+                break;
         }
         return prop;
     }

@@ -1,12 +1,114 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.JFXTreeTableView?>
+<?import com.jfoenix.controls.JFXTreeTableColumn?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<!--TODO B站下载待完成-->
-
+<?import de.jensd.fx.glyphs.materialdesignicons.MaterialDesignIconView?>
+<?import com.jfoenix.controls.JFXToggleButton?>
 <AnchorPane prefHeight="650.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pa.am.video_catcher.controller.BiliDownController">
+   <HBox alignment="CENTER_LEFT" prefHeight="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="15.0">
+      <Label style="-fx-text-fill: RED;" text="*" />
+      <Label text="视频URL" />
+      <JFXTextField fx:id="tf_url" prefWidth="600.0" styleClass="text-field-primary">
+         <HBox.margin><Insets left="20.0" /></HBox.margin>
+      </JFXTextField>
+   </HBox>
 
-   <Label layoutX="378.0" layoutY="315.0" text="开发中" />
+   <HBox alignment="CENTER_LEFT" prefHeight="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="65.0">
+      <Label style="-fx-text-fill: RED;" text="*" />
+      <Label text="下载目录" />
+      <JFXButton prefHeight="50.0" prefWidth="110.0" text="选  择" styleClass="btn-secondary" onMouseClicked="#click_chooseDir">
+         <graphic><MaterialDesignIconView glyphName="FILE_DOCUMENT" glyphSize="24" styleClass="icon"/></graphic>
+         <HBox.margin><Insets left="20.0" /></HBox.margin>
+      </JFXButton>
+      <Label fx:id="label_path" styleClass="label-prompt">
+         <HBox.margin><Insets left="20.0" /></HBox.margin>
+      </Label>
+   </HBox>
+
+   <Separator AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="125.0" />
+
+   <HBox alignment="CENTER_LEFT" layoutX="50.0" layoutY="142.0" prefHeight="50.0" spacing="20.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="140.0">
+      <Label text="下载文件重命名" />
+      <JFXTextField fx:id="tf_rename" promptText="默认为时间戳" styleClass="text-field-primary-prompt" />
+      <Label text="重试次数">
+         <HBox.margin><Insets left="100.0" /></HBox.margin>
+      </Label>
+      <JFXTextField fx:id="tf_retryLimit" prefWidth="100.0" promptText="默认为10" styleClass="text-field-primary-prompt" />
+   </HBox>
+
+   <Separator AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="205.0" />
+
+   <HBox alignment="CENTER" prefHeight="60.0" spacing="60.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="215.0">
+      <JFXButton prefHeight="55.0" prefWidth="120.0" text="获取信息" styleClass="btn-primary" onMouseClicked="#click_getInfo">
+         <graphic><MaterialDesignIconView glyphName="FILE_DOCUMENT" glyphSize="24" styleClass="icon"/></graphic>
+      </JFXButton>
+      <JFXButton prefHeight="55.0" prefWidth="120.0" text="下载封面" styleClass="btn-secondary" onMouseClicked="#click_downloadCover">
+         <graphic><MaterialDesignIconView glyphName="IMAGE_MULTIPLE" glyphSize="24" styleClass="icon"/></graphic>
+      </JFXButton>
+      <JFXButton prefHeight="55.0" prefWidth="120.0" text="下载视频" styleClass="btn-primary" onMouseClicked="#click_downloadMedia">
+         <graphic><MaterialDesignIconView glyphName="FILE_VIDEO" glyphSize="24" styleClass="icon"/></graphic>
+      </JFXButton>
+      <JFXButton prefHeight="55.0" prefWidth="120.0" text="登录设置" styleClass="btn-secondary" onMouseClicked="#click_setCookie">
+         <graphic><MaterialDesignIconView glyphName="LOGIN" glyphSize="24" styleClass="icon"/></graphic>
+      </JFXButton>
+   </HBox>
+
+   <GridPane prefHeight="90.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="280.0">
+      <columnConstraints>
+         <ColumnConstraints hgrow="SOMETIMES" maxWidth="169.0" minWidth="10.0" prefWidth="73.0" />
+         <ColumnConstraints hgrow="SOMETIMES" maxWidth="365.0" minWidth="10.0" prefWidth="365.0" />
+         <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="277.0" minWidth="10.0" prefWidth="100.0" />
+         <ColumnConstraints hgrow="SOMETIMES" maxWidth="277.0" minWidth="10.0" prefWidth="176.0" />
+      </columnConstraints>
+      <rowConstraints>
+         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      </rowConstraints>
+      <Label text="BV号:" />
+      <Label text="标题:" GridPane.rowIndex="1" />
+      <Label text="UP主:" GridPane.rowIndex="2" />
+      <Label text="上传日期:" GridPane.rowIndex="3" />
+      <Label fx:id="label_bvId" text="未获取" GridPane.columnIndex="1" />
+      <Label fx:id="label_title" text="未获取" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Label fx:id="label_uploader" text="未获取" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Label fx:id="label_uploadDate" text="未获取" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+      <Label text="播放:   " GridPane.columnIndex="2" />
+      <Label text="点赞:   " GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <Label text="硬币:   " GridPane.columnIndex="2" GridPane.rowIndex="2" />
+      <Label text="收藏:   " GridPane.columnIndex="2" GridPane.rowIndex="3" />
+      <Label fx:id="label_view" text="未获取" GridPane.columnIndex="3" />
+      <Label fx:id="label_like" text="未获取" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+      <Label fx:id="label_coin" text="未获取" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+      <Label fx:id="label_favorite" text="未获取" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+   </GridPane>
+
+   <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="20.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="370.0">
+      <Label text="分P下载" />
+      <JFXComboBox fx:id="cb_page" prefWidth="400.0" />
+      <JFXToggleButton fx:id="toggleBtn_downloadMode" text="下载音频+视频" selected="true" styleClass="toggle-btn"/>
+   </HBox>
+
+   <JFXTreeTableView fx:id="tableView" prefHeight="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" >
+      <columns>
+         <JFXTreeTableColumn fx:id="tc_formatId" prefWidth="150" styleClass="table-column" text="格式ID" />
+         <JFXTreeTableColumn fx:id="tc_note" prefWidth="150" styleClass="table-column" text="类型" />
+         <JFXTreeTableColumn fx:id="tc_resolution" prefWidth="300" styleClass="table-column" text="分辨率" />
+         <JFXTreeTableColumn fx:id="tc_codec" prefWidth="210" styleClass="table-column" text="编码格式" />
+      </columns>
+   </JFXTreeTableView>
 
 </AnchorPane>

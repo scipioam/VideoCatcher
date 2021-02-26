@@ -7,7 +7,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import pa.am.scipioutils.common.StringUtil;
-import pa.am.scipioutils.jfoenix.snackbar.JFXSnackbarHelper;
 import pa.am.video_catcher.bean.video.FormatInfo;
 import pa.am.video_catcher.bean.video.FormatType;
 import pa.am.video_catcher.bean.video.Quality;
@@ -42,13 +41,13 @@ public class SimpleModeController extends AbstractPageController{
 
     //=========================================================================
 
+    //TODO 要根据url启动不同的下载器
     /**
      * 按钮：下载
      */
     public void click_download() {
         String url = tf_url.getText();
         if(StringUtil.isNull(url)) {
-            JFXSnackbarHelper.showWarn(rootPane,"请输入视频地址");
             return;
         }
         Setting setting = new Setting();
