@@ -53,8 +53,14 @@ public class BilibiliCatcher extends BiliBiliAbstractCatcher{
             httpUtil.setDefaultUserAgent();
         }
 
-        String[] arr = coverUrl.split("/");
-        String coverFileName = arr[arr.length-1];
+        String coverFileName;
+        if(StringUtil.isNull(fileName)) {
+            String[] arr = coverUrl.split("/");
+            coverFileName = arr[arr.length-1];
+        }
+        else {
+            coverFileName = fileName;
+        }
         int retryCount = 0;//重试次数
         log.info("start request html page for download cover");
         while (retryCount<retryLimit) {
@@ -110,7 +116,7 @@ public class BilibiliCatcher extends BiliBiliAbstractCatcher{
         if(downloadMode==DownloadMode.VIDEO_ONLY) {
             log.info("Download mode is VIDEO_ONLY");
             Media video = (qualityId==null ? mediaPlay.getDefaultVideo() : mediaPlay.getBestQualityVideo());
-            File videoFile = download(httpUtil,video,dir,retryLimit);
+            File videoFile = download(httpUtil,video,dir,retryLimit,true);
             if(videoFile==null) {
                 throw new BilibiliException("Download video failed");
             }
@@ -118,7 +124,7 @@ public class BilibiliCatcher extends BiliBiliAbstractCatcher{
         else if(downloadMode==DownloadMode.AUDIO_ONLY) {
             log.info("Download mode is AUDIO_ONLY");
             Media audio = mediaPlay.getDefaultAudio();
-            File audioFile = download(httpUtil,audio,dir,retryLimit);
+            File audioFile = download(httpUtil,audio,dir,retryLimit,false);
             if(audioFile==null) {
                 throw new BilibiliException("Download audio failed");
             }
@@ -126,16 +132,24 @@ public class BilibiliCatcher extends BiliBiliAbstractCatcher{
         else {
             log.info("Download mode is FULL");
             Media video = (qualityId==null ? mediaPlay.getDefaultVideo() : mediaPlay.getBestQualityVideo());
-            File videoFile = download(httpUtil,video,dir,retryLimit);
+            File videoFile = download(httpUtil,video,dir,retryLimit,true);
             if(videoFile==null) {
                 throw new BilibiliException("Download video failed");
             }
             Media audio = mediaPlay.getDefaultAudio();
-            File audioFile = download(httpUtil,audio,dir,retryLimit);
+            File audioFile = download(httpUtil,audio,dir,retryLimit,false);
             if(audioFile==null) {
                 throw new BilibiliException("Download audio failed");
             }
             //音视频合并
+            if(downloadListener!=null) {
+                downloadListener.onStartCombine();
+            }
+            //检查文件名
+            if(StringUtil.isNull(fileName)) {
+                String[] arr = video.getMimeType().split("/");
+                fileName = System.currentTimeMillis() + "." + arr[arr.length-1];
+            }
             combine(videoFile,audioFile,dir,fileName,isDeletePart);
         }
     }
@@ -145,50 +159,56 @@ public class BilibiliCatcher extends BiliBiliAbstractCatcher{
     /**
      * 设置登录coolie
      */
-    public void setLoginCookei(String sessdata, String bili_jct) {
+    public BilibiliCatcher setLoginCookie(String sessdata, String bili_jct) {
         if(StringUtil.isNull(sessdata) || StringUtil.isNull(bili_jct)) {
-            return;
+            return this;
         }
         httpUtil.setReqHeaderParam("Cookie","SESSDATA="+sessdata+"; bili_jct="+bili_jct);
+        return this;
     }
 
     public int getRetryLimit() {
         return retryLimit;
     }
 
-    public void setRetryLimit(int retryLimit) {
+    public BilibiliCatcher setRetryLimit(int retryLimit) {
         this.retryLimit = retryLimit;
+        return this;
     }
 
     public String getDir() {
         return dir;
     }
 
-    public void setDir(String dir) {
+    public BilibiliCatcher setDir(String dir) {
         this.dir = dir;
+        return this;
     }
 
     public String getFileName() {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+    public BilibiliCatcher setFileName(String fileName) {
         this.fileName = fileName;
+        return this;
     }
 
     public String getUserAgent() {
         return userAgent;
     }
 
-    public void setUserAgent(String userAgent) {
+    public BilibiliCatcher setUserAgent(String userAgent) {
         this.userAgent = userAgent;
+        return this;
     }
 
     public boolean isDeletePart() {
         return isDeletePart;
     }
 
-    public void setDeletePart(boolean deletePart) {
+    public BilibiliCatcher setDeletePart(boolean deletePart) {
         isDeletePart = deletePart;
+        return this;
     }
 }

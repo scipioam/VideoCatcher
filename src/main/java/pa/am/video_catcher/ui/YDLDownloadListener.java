@@ -1,7 +1,7 @@
 package pa.am.video_catcher.ui;
 
 import com.sapher.youtubedl.DownloadProgressCallback;
-import pa.am.video_catcher.task.AbstractDownloadTask;
+import pa.am.video_catcher.task.AbstractYDLTask;
 
 /**
  * youtube-dl的下载进程监听器
@@ -10,13 +10,13 @@ import pa.am.video_catcher.task.AbstractDownloadTask;
  */
 public class YDLDownloadListener implements DownloadProgressCallback {
 
-    private final AbstractDownloadTask task;
+    private final AbstractYDLTask task;
     private final boolean isYoutube;//是否为下载youtube的视频，为true代表是
     private final boolean isFormat;//是否设置了format参数，为true代表设置了
 
     private double lastProgress = 0.0;
 
-    public YDLDownloadListener(AbstractDownloadTask task, boolean isYoutube, boolean isFormat) {
+    public YDLDownloadListener(AbstractYDLTask task, boolean isYoutube, boolean isFormat) {
         this.task = task;
         this.isYoutube = isYoutube;
         this.isFormat = isFormat;

@@ -42,6 +42,15 @@ public class BilibiliApi {
     //视频信息相关的json数据
     private VideoInfo videoInfo;
 
+    //登录cookie数据之一
+    private String sessdata;
+
+    //登录cookie数据之二
+    private String bili_jct;
+
+    //UA
+    private String userAgent;
+
     /**
      * 获取最终的视频信息api地址
      */
@@ -96,6 +105,16 @@ public class BilibiliApi {
             cidList = new ArrayList<>();
         }
         cidList.add(cid);
+    }
+
+    public void setFromOtherApi(BilibiliApi newApi) {
+        setRequestUrl(newApi.getRequestUrl());
+        setVideoInfo(videoInfo);
+        setCurrentMediaPlay(newApi.getCurrentMediaPlay());
+        setCoverUrl(newApi.getCoverUrl());
+        setAvid(newApi.getAvid());
+        setCidList(newApi.getCidList());
+        setBvid(newApi.getBvid());
     }
 
     //========================================================================
@@ -154,5 +173,29 @@ public class BilibiliApi {
 
     public void setCoverUrl(String coverUrl) {
         this.coverUrl = coverUrl;
+    }
+
+    public String getSessdata() {
+        return sessdata;
+    }
+
+    public void setSessdata(String sessdata) {
+        this.sessdata = sessdata;
+    }
+
+    public String getBili_jct() {
+        return bili_jct;
+    }
+
+    public void setBili_jct(String bili_jct) {
+        this.bili_jct = bili_jct;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
     }
 }

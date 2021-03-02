@@ -45,6 +45,9 @@ public class Setting {
     //下载限速(MB/s)
     private Integer downloadLimit;
 
+    //下载格式的id
+    private Integer qualityId;
+
     public Setting() { }
 
     public Setting(String url, File downloadDir, String fileName, FormatType formatType, Quality quality, FormatInfo formatInfo) {
@@ -164,5 +167,13 @@ public class Setting {
 
     public void setDownloadLimit(Integer downloadLimit) {
         this.downloadLimit = downloadLimit;
+    }
+
+    public Integer getQualityId() {
+        return qualityId;
+    }
+
+    public void setQualityId(Integer qualityId) {
+        this.qualityId = qualityId;
     }
 }

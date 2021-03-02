@@ -41,6 +41,8 @@ public class FormatModel extends RecursiveTreeObject<FormatModel> {
     //编码格式（b站专用）
     private StringProperty codec;
 
+    private Media biliMedia;
+
     public static FormatModel build(boolean isYoutubeUrl, VideoFormat originalData) {
         FormatModel model = new FormatModel();
         model.setFormatId(originalData.formatId);
@@ -207,6 +209,14 @@ public class FormatModel extends RecursiveTreeObject<FormatModel> {
 
     public void setCodec(String codec) {
         this.codec = strSet(this.codec,codec);
+    }
+
+    public Media getBiliMedia() {
+        return biliMedia;
+    }
+
+    public void setBiliMedia(Media biliMedia) {
+        this.biliMedia = biliMedia;
     }
 
     //================================================

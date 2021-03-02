@@ -165,9 +165,10 @@ public abstract class BiliBiliAbstractCatcher {
      * @param media 要下载的多媒体信息
      * @param dir 下载文件的目录
      * @param retryLimit 重试上限
+     * @param isDownloadVideo 是否在下载视频（为false则是下载音频）
      * @return 返回下载好的文件对象，如果下载失败则为null
      */
-    protected File download(HttpUtil httpUtil, Media media, String dir, int retryLimit) {
+    protected File download(HttpUtil httpUtil, Media media, String dir, int retryLimit, boolean isDownloadVideo) {
         InputStream in = null;
         FileOutputStream out = null;
         int retryCount = 0;
@@ -204,13 +205,13 @@ public abstract class BiliBiliAbstractCatcher {
                     out.write(bytes, 0, len);
                     downloadedBytes += len;
                     if(downloadListener!=null) {
-                        downloadListener.onProcess(downloadedBytes,totalBytes);
+                        downloadListener.onDownload(isDownloadVideo,downloadedBytes,totalBytes);
                     }
                 }
                 out.flush();
 
                 if(downloadListener!=null) {
-                    downloadListener.onFinished(totalBytes,downloadFile,media);
+                    downloadListener.onDownloadFinished(totalBytes,downloadFile,media);
                 }
                 break;
             }catch (Exception e){

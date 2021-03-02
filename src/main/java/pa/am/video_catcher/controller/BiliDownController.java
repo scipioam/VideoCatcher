@@ -13,12 +13,17 @@ import pa.am.scipioutils.common.DateTimeUtil;
 import pa.am.scipioutils.common.StringUtil;
 import pa.am.scipioutils.jfoenix.DialogHelper;
 import pa.am.scipioutils.jfoenix.ProgressDialog;
+import pa.am.scipioutils.jfoenix.fxml.FxmlView;
 import pa.am.scipioutils.jfoenix.snackbar.JFXSnackbarHelper;
 import pa.am.video_catcher.bean.ui.ColumnType;
 import pa.am.video_catcher.bean.ui.FormatModel;
 import pa.am.video_catcher.bean.video.BiliPage;
+import pa.am.video_catcher.bean.video.Setting;
 import pa.am.video_catcher.catcher.bilibili.bean.BilibiliApi;
+import pa.am.video_catcher.catcher.bilibili.bean.DownloadMode;
 import pa.am.video_catcher.catcher.bilibili.bean.video_info.*;
+import pa.am.video_catcher.task.BiliCoverDownloadTask;
+import pa.am.video_catcher.task.BiliDownloadTask;
 import pa.am.video_catcher.task.GetBiliVideoInfoTask;
 import pa.am.video_catcher.ui.BiliPageChangeListener;
 import pa.am.video_catcher.ui.NumericTextFieldOperator;
@@ -73,13 +78,15 @@ public class BiliDownController extends AbstractPageController{
     @FXML
     private JFXTreeTableColumn<FormatModel,String> tc_resolution;
 
+    private FxmlView biliSettingView;
+
     private BiliPageChangeListener biliPageChangeListener;
     //当前画面显示的格式列表
     private final ObservableList<FormatModel> currentFormatList = FXCollections.observableArrayList();
     //所有分p的格式列表，key是cid
     private final Map<Long, List<FormatModel>> formatListMap = new HashMap<>();
-    //上一次的视频url
-    private String lastUrl = null;
+    //获取的b站下载信息（上一次）
+    private final BilibiliApi lastApi = new BilibiliApi();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -157,17 +164,17 @@ public class BiliDownController extends AbstractPageController{
         ProgressDialog progressDialog = DialogHelper.prepareProgress(rootPane,"获取中...");
         progressDialog.show();
         //第一次（或新的一次）获取视频信息
-        if(!url.equals(lastUrl)) {
-            GetBiliVideoInfoTask task = new GetBiliVideoInfoTask(url,this,progressDialog,formatListMap,true,null,null);
+        if(!url.equals(lastApi.getRequestUrl())) {
+            GetBiliVideoInfoTask task = new GetBiliVideoInfoTask(url,this,progressDialog,formatListMap,true,null,null,lastApi.getSessdata(),lastApi.getBili_jct(),lastApi.getUserAgent());
             threadPool.submit(task);
         }
         //已经获取过，重新获取（可能是另外p的format信息）
         else {
             BiliPage page = cb_page.getSelectionModel().getSelectedItem();
-            GetBiliVideoInfoTask task = new GetBiliVideoInfoTask(url,this,progressDialog,formatListMap,false,page.getVideoInfo(),page.getCid());
+            GetBiliVideoInfoTask task = new GetBiliVideoInfoTask(url,this,progressDialog,formatListMap,false,page.getVideoInfo(),page.getCid(),lastApi.getSessdata(),lastApi.getBili_jct(),lastApi.getUserAgent());
             threadPool.submit(task);
         }
-        lastUrl = url;
+        lastApi.setRequestUrl(url);
     }
 
     /**
@@ -175,15 +182,55 @@ public class BiliDownController extends AbstractPageController{
      */
     @FXML
     private void click_downloadCover() {
-
+        Setting setting = buildSetting();
+        if(setting==null) {
+            return;
+        }
+        String coverUrl = ( setting.getUrl().equals(lastApi.getRequestUrl()) ? lastApi.getCoverUrl() : null );
+        ProgressDialog progressDialog = DialogHelper.prepareProgress(rootPane,"下载中...");
+        progressDialog.show();
+        BiliCoverDownloadTask task = new BiliCoverDownloadTask(this,setting,coverUrl,progressDialog);
+        bindTask2Progress(task,progressDialog);
+        threadPool.submit(task);
     }
 
     /**
      * 按钮：下载音视频
+     * TODO 待进一步测试
      */
     @FXML
     private void click_downloadMedia() {
-
+        Setting setting = buildSetting();
+        if(setting==null) {
+            return;
+        }
+        //组装下载模式及下载格式的id
+        DownloadMode downloadMode;
+        Integer qualityId = null;
+        int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
+        if(selectedIndex>=0) {
+            FormatModel model = currentFormatList.get(selectedIndex);
+            if(model.getNote().equals("音频")) {
+                downloadMode = DownloadMode.AUDIO_ONLY;
+            }
+            else {
+                downloadMode = ( toggleBtn_downloadMode.isSelected() ? DownloadMode.FULL : DownloadMode.VIDEO_ONLY );
+            }
+            qualityId = Integer.parseInt(model.getFormatId());
+        }
+        else {
+            downloadMode = ( toggleBtn_downloadMode.isSelected() ? DownloadMode.FULL : DownloadMode.VIDEO_ONLY );
+        }
+        setting.setQualityId(qualityId);
+        //确定是否为新的url
+        boolean isNewUrl = ( !setting.getUrl().equals(lastApi.getRequestUrl()) );
+        BiliPage page = cb_page.getSelectionModel().getSelectedItem();
+        //开始下载
+        ProgressDialog progressDialog = DialogHelper.prepareProgress(rootPane,"开始下载");
+        progressDialog.show();
+        BiliDownloadTask task = new BiliDownloadTask(this,setting,lastApi,page,progressDialog,downloadMode,isNewUrl);
+        bindTask2Progress(task,progressDialog);
+        threadPool.submit(task);
     }
 
     /**
@@ -191,16 +238,26 @@ public class BiliDownController extends AbstractPageController{
      */
     @FXML
     private void click_setCookie() {
-
+        if(biliSettingView==null) {
+            biliSettingView = FxmlView.showView(biliSettingView,"/view/bili_setting.fxml",
+                    "登录设置", rootPane.getScene().getWindow());
+            BiliSettingController controller = (BiliSettingController) biliSettingView.getController();
+            controller.setThisStage(biliSettingView.getStage());
+            controller.setApi(lastApi);
+            controller.setParentRootPane(rootPane);
+        }
+        else{
+            biliSettingView.getStage().show();
+        }
     }
 
     //=========================================================================
 
     /**
      * 更新视频信息
-     * @param api 信息对象
+     * @param newApi 信息对象
      */
-    public void updateVideoInfo(BilibiliApi api, ProgressDialog progressDialog, boolean isFirst, Long cid) {
+    public void updateVideoInfo(BilibiliApi newApi, ProgressDialog progressDialog, boolean isFirst, Long cid) {
         if(!isFirst) {
             List<FormatModel> newFormatList = formatListMap.get(cid);
             currentFormatList.clear();
@@ -212,12 +269,13 @@ public class BiliDownController extends AbstractPageController{
 
         cb_page.getItems().clear();
         //获取成功
-        if(api!=null) {
-            VideoInfo videoInfo = api.getVideoInfo();
+        if(newApi!=null) {
+            VideoInfo videoInfo = newApi.getVideoInfo();
             if(videoInfo==null) {
                 updateVideoInfoFailed();
                 return;
             }
+            lastApi.setFromOtherApi(newApi);
             VideoData data = videoInfo.getVideoData();
             Owner up = data.getOwner();
             Stat stat = data.getStat();
@@ -234,11 +292,10 @@ public class BiliDownController extends AbstractPageController{
                 BiliPage uiPage = new BiliPage(page.getPart(),page.getCid(),videoInfo.getAid());
                 uiPage.setVideoInfo(videoInfo);
                 if(page.getPage()==1) {
-                    uiPage.setMediaPlay(api.getCurrentMediaPlay());
+                    uiPage.setMediaPlay(newApi.getCurrentMediaPlay());
                 }
                 cb_page.getItems().add(uiPage);
             }//end for
-
         }//end outside if
         //获取失败
         else {
@@ -263,4 +320,26 @@ public class BiliDownController extends AbstractPageController{
         cb_page.getItems().add(new BiliPage("未获取信息"));
     }
 
+    public BilibiliApi getLastApi() {
+        return lastApi;
+    }
+
+    private Setting buildSetting() {
+        String videoUrl = tf_url.getText();
+        if(isInvalidInputs(videoUrl,downloadDir)) {
+            return null;
+        }
+        Setting setting = new Setting();
+        setting.setDownloadDir(downloadDir);
+        setting.setUrl(videoUrl);
+        setting.setFileName(tf_rename.getText());
+        String retryLimitStr = tf_retryLimit.getText();
+        if(StringUtil.isNotNull(retryLimitStr)) {
+            int retryLimit = Integer.parseInt(retryLimitStr);
+            if(retryLimit>0) {
+                setting.setRetries(retryLimit);
+            }
+        }
+        return setting;
+    }
 }

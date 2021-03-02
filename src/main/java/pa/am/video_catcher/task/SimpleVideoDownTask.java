@@ -14,7 +14,7 @@ import pa.am.video_catcher.controller.AbstractPageController;
  * @author Alan Min
  * @since 2021/2/22
  */
-public class SimpleVideoDownTask extends AbstractDownloadTask{
+public class SimpleVideoDownTask extends AbstractYDLTask {
 
     private final JFXProgressBar progressBar;
     private final Label label_progress;

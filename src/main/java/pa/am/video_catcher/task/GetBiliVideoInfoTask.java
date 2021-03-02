@@ -2,6 +2,7 @@ package pa.am.video_catcher.task;
 
 import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
+import pa.am.scipioutils.common.StringUtil;
 import pa.am.scipioutils.jfoenix.ProgressDialog;
 import pa.am.video_catcher.bean.GlobalConst;
 import pa.am.video_catcher.bean.ui.FormatModel;
@@ -31,8 +32,11 @@ public class GetBiliVideoInfoTask extends AbstractTask{
     private final boolean isFirst;
     private final VideoInfo videoInfo;
     private final Long cid;
+    private final String sessdata;
+    private final String bili_jct;
+    private final String userAgent;
 
-    public GetBiliVideoInfoTask(String url, BiliDownController controller, ProgressDialog progressDialog, Map<Long, List<FormatModel>> formatListMap, boolean isFirst, VideoInfo videoInfo, Long cid) {
+    public GetBiliVideoInfoTask(String url, BiliDownController controller, ProgressDialog progressDialog, Map<Long, List<FormatModel>> formatListMap, boolean isFirst, VideoInfo videoInfo, Long cid, String sessdata, String bili_jct, String userAgent) {
         super(LogManager.getLogger(GetBiliVideoInfoTask.class));
         this.url = url;
         this.controller = controller;
@@ -41,13 +45,21 @@ public class GetBiliVideoInfoTask extends AbstractTask{
         this.isFirst = isFirst;
         this.videoInfo = videoInfo;
         this.cid = cid;
+        this.sessdata = sessdata;
+        this.bili_jct = bili_jct;
+        this.userAgent = userAgent;
     }
 
     @Override
     protected String call() {
         long startTime = System.currentTimeMillis();
         BilibiliCatcher catcher = new BilibiliCatcher();
-        catcher.setLoginCookei("e2ab4db4%2C1624427185%2C790c1*c1","7d3a39520987b869cda9805b4b046d13");
+        if(StringUtil.isNotNull(sessdata) && StringUtil.isNotNull(bili_jct)) {
+            catcher.setLoginCookie(sessdata,bili_jct);
+        }
+        if(StringUtil.isNotNull(userAgent)) {
+            catcher.setUserAgent(userAgent);
+        }
         BilibiliApi api = null;
         try {
             if(isFirst) {

@@ -12,10 +12,16 @@ public interface DownloadListener {
 
     /**
      * 下载时
+     * @param isVideo 是否在下载视频（为false则是在下载音频）
      * @param downloadedBytes 已下载的字节数
      * @param totalBytes 总字节数
      */
-    void onProcess(long downloadedBytes, long totalBytes);
+    void onDownload(boolean isVideo, long downloadedBytes, long totalBytes);
+
+    /**
+     * 开始合并音视频
+     */
+    void onStartCombine();
 
     /**
      * 下载完成时
@@ -23,6 +29,6 @@ public interface DownloadListener {
      * @param downloadedFile 下载的文件
      * @param media 下载的多媒体信息
      */
-    void onFinished(long totalBytes, File downloadedFile, Media media);
+    void onDownloadFinished(long totalBytes, File downloadedFile, Media media);
 
 }

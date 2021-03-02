@@ -13,7 +13,7 @@ import pa.am.video_catcher.controller.AbstractPageController;
  * @author Alan Min
  * @since 2021/2/19
  */
-public class VideoDownloadTask extends AbstractDownloadTask {
+public class VideoDownloadTask extends AbstractYDLTask {
 
     private final ProgressDialog progressDialog;
 

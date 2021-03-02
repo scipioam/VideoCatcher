@@ -14,15 +14,16 @@ import java.io.File;
 import java.util.Map;
 
 /**
+ * youtube-dl的下载线程公共父类
  * @author Alan Min
  * @since 2021/2/22
  */
-public abstract class AbstractDownloadTask extends AbstractTask{
+public abstract class AbstractYDLTask extends AbstractTask{
 
     protected final AbstractPageController controller;
     protected final Setting setting;
 
-    public AbstractDownloadTask(Logger log, AbstractPageController controller, Setting setting) {
+    public AbstractYDLTask(Logger log, AbstractPageController controller, Setting setting) {
         super(log);
         this.controller = controller;
         this.setting = setting;
