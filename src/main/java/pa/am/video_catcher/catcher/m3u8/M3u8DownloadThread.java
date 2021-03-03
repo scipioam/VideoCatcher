@@ -42,7 +42,7 @@ public class M3u8DownloadThread implements Runnable{
     //下载清单
     private final String[] tsUrlArr;
     //下载路径
-    private final String dir;
+    private final String tempDir;
     //已完成的文件列表（线程安全）
     private final Set<File> finishedFileSet;
 
@@ -64,14 +64,14 @@ public class M3u8DownloadThread implements Runnable{
     private final HttpUtil httpUtil = new HttpUtil();
     private CryptoUtil cryptoUtil;
 
-    public M3u8DownloadThread(String threadName, CountDownLatch latch, boolean isEncrypted, int startIndex, int processLength, String[] tsUrlArr, String dir, Set<File> finishedFileSet) {
+    public M3u8DownloadThread(String threadName, CountDownLatch latch, boolean isEncrypted, int startIndex, int processLength, String[] tsUrlArr, String tempDir, Set<File> finishedFileSet) {
         this.threadName = threadName;
         this.latch = latch;
         this.isEncrypted = isEncrypted;
         this.startIndex = startIndex;
         this.processLength = processLength;
         this.tsUrlArr = tsUrlArr;
-        this.dir = dir;
+        this.tempDir = tempDir;
         this.finishedFileSet = finishedFileSet;
     }
 
@@ -144,7 +144,7 @@ public class M3u8DownloadThread implements Runnable{
                 }
 
                 String tsFileName = (isEncrypted ? index+"_undec" : index+"");
-                undecTsFile = new File(dir + File.separator + tsFileName + TS_FILE_SUFFIX);
+                undecTsFile = new File(tempDir + File.separator + tsFileName + TS_FILE_SUFFIX);
                 if (undecTsFile.exists())
                     undecTsFile.delete(); //未解密的ts片段，如果存在，则删除
                 undecTsFile.createNewFile();
@@ -207,7 +207,7 @@ public class M3u8DownloadThread implements Runnable{
                 return;
             }
 
-            decTsFile = new File(dir + File.separator + index + TS_FILE_SUFFIX);
+            decTsFile = new File(tempDir + File.separator + index + TS_FILE_SUFFIX);
             try {
                 if(decTsFile.exists())
                     decTsFile.delete();

@@ -16,7 +16,7 @@ import pa.am.scipioutils.jfoenix.ProgressDialog;
 import pa.am.scipioutils.jfoenix.fxml.FxmlView;
 import pa.am.scipioutils.jfoenix.snackbar.JFXSnackbarHelper;
 import pa.am.video_catcher.bean.ui.ColumnType;
-import pa.am.video_catcher.bean.ui.FormatModel;
+import pa.am.video_catcher.bean.ui.FormatVO;
 import pa.am.video_catcher.bean.video.BiliPage;
 import pa.am.video_catcher.bean.video.Setting;
 import pa.am.video_catcher.catcher.bilibili.bean.BilibiliApi;
@@ -68,23 +68,23 @@ public class BiliDownController extends AbstractPageController{
     @FXML
     private JFXToggleButton toggleBtn_downloadMode;//是否下载音频+视频
     @FXML
-    private JFXTreeTableView<FormatModel> tableView;
+    private JFXTreeTableView<FormatVO> tableView;
     @FXML
-    private JFXTreeTableColumn<FormatModel,String> tc_formatId;
+    private JFXTreeTableColumn<FormatVO,String> tc_formatId;
     @FXML
-    private JFXTreeTableColumn<FormatModel,String> tc_note;
+    private JFXTreeTableColumn<FormatVO,String> tc_note;
     @FXML
-    private JFXTreeTableColumn<FormatModel,String> tc_codec;
+    private JFXTreeTableColumn<FormatVO,String> tc_codec;
     @FXML
-    private JFXTreeTableColumn<FormatModel,String> tc_resolution;
+    private JFXTreeTableColumn<FormatVO,String> tc_resolution;
 
     private FxmlView biliSettingView;
 
     private BiliPageChangeListener biliPageChangeListener;
     //当前画面显示的格式列表
-    private final ObservableList<FormatModel> currentFormatList = FXCollections.observableArrayList();
+    private final ObservableList<FormatVO> currentFormatList = FXCollections.observableArrayList();
     //所有分p的格式列表，key是cid
-    private final Map<Long, List<FormatModel>> formatListMap = new HashMap<>();
+    private final Map<Long, List<FormatVO>> formatListMap = new HashMap<>();
     //获取的b站下载信息（上一次）
     private final BilibiliApi lastApi = new BilibiliApi();
 
@@ -122,7 +122,7 @@ public class BiliDownController extends AbstractPageController{
         TableViewInit.initStrColumn(tc_note, ColumnType.NOTE);
         TableViewInit.initStrColumn(tc_codec, ColumnType.CODEC);
         TableViewInit.initStrColumn(tc_resolution, ColumnType.RESOLUTION);
-        final TreeItem<FormatModel> root = new RecursiveTreeItem<>(currentFormatList, RecursiveTreeObject::getChildren);
+        final TreeItem<FormatVO> root = new RecursiveTreeItem<>(currentFormatList, RecursiveTreeObject::getChildren);
         tableView.setRoot(root);
         tableView.setShowRoot(false);
     }
@@ -209,7 +209,7 @@ public class BiliDownController extends AbstractPageController{
         Integer qualityId = null;
         int selectedIndex = tableView.getSelectionModel().getSelectedIndex();
         if(selectedIndex>=0) {
-            FormatModel model = currentFormatList.get(selectedIndex);
+            FormatVO model = currentFormatList.get(selectedIndex);
             if(model.getNote().equals("音频")) {
                 downloadMode = DownloadMode.AUDIO_ONLY;
             }
@@ -259,7 +259,7 @@ public class BiliDownController extends AbstractPageController{
      */
     public void updateVideoInfo(BilibiliApi newApi, ProgressDialog progressDialog, boolean isFirst, Long cid) {
         if(!isFirst) {
-            List<FormatModel> newFormatList = formatListMap.get(cid);
+            List<FormatVO> newFormatList = formatListMap.get(cid);
             currentFormatList.clear();
             currentFormatList.addAll(newFormatList);
             tableView.refresh();

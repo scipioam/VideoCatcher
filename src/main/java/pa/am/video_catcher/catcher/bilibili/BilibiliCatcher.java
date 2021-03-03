@@ -116,7 +116,7 @@ public class BilibiliCatcher extends BiliBiliAbstractCatcher{
         if(downloadMode==DownloadMode.VIDEO_ONLY) {
             log.info("Download mode is VIDEO_ONLY");
             Media video = (qualityId==null ? mediaPlay.getDefaultVideo() : mediaPlay.getBestQualityVideo());
-            File videoFile = download(httpUtil,video,dir,retryLimit,true);
+            File videoFile = download(httpUtil,video,dir,retryLimit,true,true);
             if(videoFile==null) {
                 throw new BilibiliException("Download video failed");
             }
@@ -124,7 +124,7 @@ public class BilibiliCatcher extends BiliBiliAbstractCatcher{
         else if(downloadMode==DownloadMode.AUDIO_ONLY) {
             log.info("Download mode is AUDIO_ONLY");
             Media audio = mediaPlay.getDefaultAudio();
-            File audioFile = download(httpUtil,audio,dir,retryLimit,false);
+            File audioFile = download(httpUtil,audio,dir,retryLimit,false,true);
             if(audioFile==null) {
                 throw new BilibiliException("Download audio failed");
             }
@@ -132,12 +132,12 @@ public class BilibiliCatcher extends BiliBiliAbstractCatcher{
         else {
             log.info("Download mode is FULL");
             Media video = (qualityId==null ? mediaPlay.getDefaultVideo() : mediaPlay.getBestQualityVideo());
-            File videoFile = download(httpUtil,video,dir,retryLimit,true);
+            File videoFile = download(httpUtil,video,dir,retryLimit,true,false);
             if(videoFile==null) {
                 throw new BilibiliException("Download video failed");
             }
             Media audio = mediaPlay.getDefaultAudio();
-            File audioFile = download(httpUtil,audio,dir,retryLimit,false);
+            File audioFile = download(httpUtil,audio,dir,retryLimit,false,true);
             if(audioFile==null) {
                 throw new BilibiliException("Download audio failed");
             }

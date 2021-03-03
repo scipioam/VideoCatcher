@@ -72,26 +72,46 @@ public abstract class AbstractYDLTask extends AbstractTask{
         //下载文件的命名
         request.setOption("output", StringUtil.isNotNull(setting.getFileName()) ? setting.getFileName() : "%(id)s" );
         //格式组装
-        if(setting.getFormatType()== FormatType.AUDIO_ONLY) {
-            request.setOption("extract-audio");
-            request.setOption("audio-quality", setting.getQuality()== Quality.WORST ? 9 : 0);
-            FormatInfo.setAudioFormat(setting.getFormatInfo(),request);
+        StringBuilder format = new StringBuilder();
+        FormatType formatType = setting.getFormatType();
+        Quality quality = setting.getQuality();
+        if(formatType==FormatType.AUDIO_ONLY) {
+            if(quality==Quality.WORST) {
+                format.append("worstaudio");
+            }
+            else if(quality==Quality.BEST) {
+                format.append("bestaudio");
+            }
         }
-        else {
-            StringBuilder format = new StringBuilder();
-            if(setting.getQuality()==Quality.WORST) {
-                format.append(setting.getFormatType()==FormatType.FULL ? "worst" : "worstvideo");
+        else if(formatType==FormatType.VIDEO_ONLY) {
+            if(quality==Quality.WORST) {
+                format.append("worstvideo");
             }
-            if(setting.getFormatInfo()!=FormatInfo.ORIGINAL) {
-                if(format.length()>0) {
-                    format.append("/");
-                }
-                format.append(setting.getFormatInfo().getSuffix());
+            else if(quality==Quality.BEST) {
+                format.append("bestvideo");
             }
+        }
+        else if(formatType==FormatType.FULL) {
+            if(quality==Quality.WORST) {
+                format.append("worst");
+            }
+        }
+
+        if(setting.getFormatInfo()!=FormatInfo.ORIGINAL) {
             if(format.length()>0) {
-                request.setOption("format",format.toString());
-                isFormat = true;
+                format.append("/");
             }
+            format.append(setting.getFormatInfo().getSuffix());
+        }
+        if(setting.getQualityId()!=null) {
+            if(format.length()>0) {
+                format.append("/");
+            }
+            format.append(setting.getQualityId());
+        }
+        if(format.length()>0) {
+            request.setOption("format",format.toString());
+            isFormat = true;
         }
         //下载限速
         if(setting.getDownloadLimit()!=null) {
@@ -118,12 +138,10 @@ public abstract class AbstractYDLTask extends AbstractTask{
             request.setOption("recode-video",setting.getTransFormat().getSuffix());
         }
 
-        //test
         Map<String,String> options = request.getOption();
         for(Map.Entry<String,String> option : options.entrySet()) {
             log.info("YDL request option [{}] : [{}]",option.getKey(),option.getValue());
         }
-
         return isFormat;
     }//end packageOptions()
 

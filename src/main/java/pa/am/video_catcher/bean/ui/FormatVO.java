@@ -9,7 +9,7 @@ import pa.am.video_catcher.catcher.bilibili.bean.media_play.Media;
  * @author Alan Min
  * @since 2021/2/20
  */
-public class FormatModel extends RecursiveTreeObject<FormatModel> {
+public class FormatVO extends RecursiveTreeObject<FormatVO> {
 
     //格式id
     private StringProperty formatId;
@@ -43,8 +43,8 @@ public class FormatModel extends RecursiveTreeObject<FormatModel> {
 
     private Media biliMedia;
 
-    public static FormatModel build(boolean isYoutubeUrl, VideoFormat originalData) {
-        FormatModel model = new FormatModel();
+    public static FormatVO build(boolean isYoutubeUrl, VideoFormat originalData) {
+        FormatVO model = new FormatVO();
         model.setFormatId(originalData.formatId);
         model.setFormatInfo(originalData.format);
         model.setExtension(originalData.ext);
@@ -60,8 +60,8 @@ public class FormatModel extends RecursiveTreeObject<FormatModel> {
         return model;
     }
 
-    public static FormatModel build(Media media, String resolutionInfo) {
-        FormatModel model = new FormatModel();
+    public static FormatVO build(Media media, String resolutionInfo) {
+        FormatVO model = new FormatVO();
         model.setFormatId(media.getId().toString());
         model.setCodec(media.getCodecs());
         model.setResolution(resolutionInfo);

@@ -67,9 +67,9 @@ public class SimpleVideoDownTask extends AbstractYDLTask {
             }catch (InterruptedException e) {
                 log.warn("Thread.sleep has been interrupted");
             }
-            Platform.runLater(()->{
-                controller.unbindTask2Progress(label_progress,progressBar);
-                DialogHelper.showAlert(controller.getRootPane(),"下载失败","下载格式不支持!");
+            Platform.runLater(()-> {
+                controller.unbindTask2Progress(label_progress, progressBar);
+                DialogHelper.showAlert(controller.getRootPane(), "下载失败", "下载格式不支持!");
             });
         }
         else {

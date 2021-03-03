@@ -28,7 +28,8 @@ public interface DownloadListener {
      * @param totalBytes 总字节数
      * @param downloadedFile 下载的文件
      * @param media 下载的多媒体信息
+     * @param isLastDownload 是否为最后一次下载
      */
-    void onDownloadFinished(long totalBytes, File downloadedFile, Media media);
+    void onDownloadFinished(long totalBytes, File downloadedFile, Media media, boolean isLastDownload);
 
 }

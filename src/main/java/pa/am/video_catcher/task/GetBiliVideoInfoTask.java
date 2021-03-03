@@ -5,7 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import pa.am.scipioutils.common.StringUtil;
 import pa.am.scipioutils.jfoenix.ProgressDialog;
 import pa.am.video_catcher.bean.GlobalConst;
-import pa.am.video_catcher.bean.ui.FormatModel;
+import pa.am.video_catcher.bean.ui.FormatVO;
 import pa.am.video_catcher.catcher.bilibili.BilibiliCatcher;
 import pa.am.video_catcher.catcher.bilibili.bean.BilibiliApi;
 import pa.am.video_catcher.catcher.bilibili.bean.media_play.Media;
@@ -28,7 +28,7 @@ public class GetBiliVideoInfoTask extends AbstractTask{
     private final String url;
     private final BiliDownController controller;
     private final ProgressDialog progressDialog;
-    private final Map<Long, List<FormatModel>> formatListMap;
+    private final Map<Long, List<FormatVO>> formatListMap;
     private final boolean isFirst;
     private final VideoInfo videoInfo;
     private final Long cid;
@@ -36,7 +36,7 @@ public class GetBiliVideoInfoTask extends AbstractTask{
     private final String bili_jct;
     private final String userAgent;
 
-    public GetBiliVideoInfoTask(String url, BiliDownController controller, ProgressDialog progressDialog, Map<Long, List<FormatModel>> formatListMap, boolean isFirst, VideoInfo videoInfo, Long cid, String sessdata, String bili_jct, String userAgent) {
+    public GetBiliVideoInfoTask(String url, BiliDownController controller, ProgressDialog progressDialog, Map<Long, List<FormatVO>> formatListMap, boolean isFirst, VideoInfo videoInfo, Long cid, String sessdata, String bili_jct, String userAgent) {
         super(LogManager.getLogger(GetBiliVideoInfoTask.class));
         this.url = url;
         this.controller = controller;
@@ -95,10 +95,10 @@ public class GetBiliVideoInfoTask extends AbstractTask{
         //视频信息
         List<Media> videoList = mediaPlay.getVideoList();
         Map<Integer,String> qualityDescMap = mediaPlay.getQualityDescMap();
-        List<FormatModel> modelList = new ArrayList<>();
+        List<FormatVO> modelList = new ArrayList<>();
         for(int i=0; i<videoList.size(); i+=2) {
             Media video = videoList.get(i);
-            FormatModel model = FormatModel.build(video,qualityDescMap.get(video.getId()));
+            FormatVO model = FormatVO.build(video,qualityDescMap.get(video.getId()));
             model.setCid(page.getCid());
             model.setAid(videoInfo.getAid());
             modelList.add(model);
@@ -106,7 +106,7 @@ public class GetBiliVideoInfoTask extends AbstractTask{
         //音频信息
         List<Media> audioList = mediaPlay.getSortedAudioList();
         for(Media audio : audioList) {
-            FormatModel model = FormatModel.build(audio,null);
+            FormatVO model = FormatVO.build(audio,null);
             model.setCid(page.getCid());
             model.setAid(videoInfo.getAid());
             modelList.add(model);

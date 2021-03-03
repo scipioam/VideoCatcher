@@ -4,7 +4,7 @@ import com.jfoenix.controls.JFXTreeTableView;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import pa.am.video_catcher.bean.ui.FormatModel;
+import pa.am.video_catcher.bean.ui.FormatVO;
 import pa.am.video_catcher.bean.video.BiliPage;
 
 import java.util.List;
@@ -17,11 +17,11 @@ import java.util.Map;
  */
 public class BiliPageChangeListener implements ChangeListener<BiliPage> {
 
-    private final JFXTreeTableView<FormatModel> tableView;
-    private final Map<Long, List<FormatModel>> formatListMap;
-    private final ObservableList<FormatModel> currentFormatList;
+    private final JFXTreeTableView<FormatVO> tableView;
+    private final Map<Long, List<FormatVO>> formatListMap;
+    private final ObservableList<FormatVO> currentFormatList;
 
-    public BiliPageChangeListener(JFXTreeTableView<FormatModel> tableView, Map<Long, List<FormatModel>> formatListMap, ObservableList<FormatModel> currentFormatList) {
+    public BiliPageChangeListener(JFXTreeTableView<FormatVO> tableView, Map<Long, List<FormatVO>> formatListMap, ObservableList<FormatVO> currentFormatList) {
         this.tableView = tableView;
         this.formatListMap = formatListMap;
         this.currentFormatList = currentFormatList;
@@ -32,7 +32,7 @@ public class BiliPageChangeListener implements ChangeListener<BiliPage> {
         if(newValue==null) {
             return;
         }
-        List<FormatModel> formatList = formatListMap.get(newValue.getCid());
+        List<FormatVO> formatList = formatListMap.get(newValue.getCid());
         currentFormatList.clear();
         if(formatList!=null) {
             currentFormatList.addAll(formatList);

@@ -170,15 +170,16 @@ public abstract class M3u8AbstractCatcher {
     /**
      * 合并所有ts片段为一个整体的文件
      * @param tsFileSet ts文件列表
-     * @param dir 父目录
+     * @param rootDir 根目录
+     * @param tempDir 临时下载目录(所有ts文件在这里)
      * @param fileName 整体文件的文件名
      * @param fileSuffix 整体文件的后缀
      * @param isDeleteTs 是否在合并完后删除ts片段，为true代表是
      * @return 整体文件本身
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    protected File mergeTsFiles(Set<File> tsFileSet, String dir, String fileName, String fileSuffix, boolean isDeleteTs) {
-        File finalFile = new File(dir + File.separator +fileName + fileSuffix);
+    protected File mergeTsFiles(Set<File> tsFileSet, String rootDir, File tempDir, String fileName, String fileSuffix, boolean isDeleteTs) {
+        File finalFile = new File(rootDir + File.separator + fileName + fileSuffix);
         FileOutputStream out = null;
         try {
             if (finalFile.exists()) {
@@ -210,9 +211,12 @@ public abstract class M3u8AbstractCatcher {
 
         //开始删除ts文件
         if(isDeleteTs) {
+            //删除ts文件
             for(File tsFile : tsFileSet) {
                 tsFile.delete();
             }
+            //删除临时下载文件夹
+            tempDir.delete();
         }
         return finalFile;
     }//end mergeTsFiles()

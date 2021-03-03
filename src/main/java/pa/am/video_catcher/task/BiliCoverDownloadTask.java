@@ -77,8 +77,8 @@ public class BiliCoverDownloadTask extends AbstractTask{
 
     private void finishJob(long startTime,final boolean isSuccess) {
         keepThreadRunTime(startTime, GlobalConst.THREAD_KEEP_TIME);
+        controller.unbindTask2Progress(progressDialog);
         Platform.runLater(()->{
-            controller.unbindTask2Progress(progressDialog);
             progressDialog.dismiss();
             if(isSuccess) {
                 DialogHelper.showAlert(controller.getRootPane(),"下载完成","已成功下载封面!");

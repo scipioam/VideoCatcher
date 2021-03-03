@@ -67,24 +67,24 @@ public class VideoDownController extends AbstractPageController {
     private Label label_size;//视频尺寸
 
     @FXML
-    private JFXTreeTableView<FormatModel> tableView;
+    private JFXTreeTableView<FormatVO> tableView;
     @FXML
-    private JFXTreeTableColumn<FormatModel,String> tc_formatId;
+    private JFXTreeTableColumn<FormatVO,String> tc_formatId;
     @FXML
-    private JFXTreeTableColumn<FormatModel,String> tc_note;
+    private JFXTreeTableColumn<FormatVO,String> tc_note;
     @FXML
-    private JFXTreeTableColumn<FormatModel,String> tc_fps;
+    private JFXTreeTableColumn<FormatVO,String> tc_fps;
     @FXML
-    private JFXTreeTableColumn<FormatModel,String> tc_extension;
+    private JFXTreeTableColumn<FormatVO,String> tc_extension;
     @FXML
-    private JFXTreeTableColumn<FormatModel,String> tc_fileSize;
+    private JFXTreeTableColumn<FormatVO,String> tc_fileSize;
     @FXML
-    private JFXTreeTableColumn<FormatModel,String> tc_resolution;
+    private JFXTreeTableColumn<FormatVO,String> tc_resolution;
 
     private final Setting setting = new Setting();
     private FxmlView advancedSettingView;//高级设置view
     private DownloadFormatChangeListener dfChangeListener;
-    private final ObservableList<FormatModel> formatModelList = FXCollections.observableArrayList();
+    private final ObservableList<FormatVO> formatVOList = FXCollections.observableArrayList();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -145,7 +145,7 @@ public class VideoDownController extends AbstractPageController {
         TableViewInit.initStrColumn(tc_extension, ColumnType.EXTENSION);
         TableViewInit.initStrColumn(tc_fileSize, ColumnType.FILE_SIZE);
         TableViewInit.initStrColumn(tc_resolution, ColumnType.RESOLUTION);
-        final TreeItem<FormatModel> root = new RecursiveTreeItem<>(formatModelList, RecursiveTreeObject::getChildren);
+        final TreeItem<FormatVO> root = new RecursiveTreeItem<>(formatVOList, RecursiveTreeObject::getChildren);
         tableView.setRoot(root);
         tableView.setShowRoot(false);
     }
@@ -194,24 +194,35 @@ public class VideoDownController extends AbstractPageController {
         if(isInvalidInputs(url,downloadDir)) {
             return;
         }
+
         FormatType formatType = cb_formatType.getSelectionModel().getSelectedItem();
+        Integer selectedFormatId;
+        int selectedFormatIndex = tableView.getSelectionModel().getSelectedIndex();
+        if(selectedFormatIndex>=0) {
+            FormatVO selectedFormat = formatVOList.get(selectedFormatIndex);
+            selectedFormatId = Integer.parseInt(selectedFormat.getFormatId());
+        }
+        else {
+            selectedFormatId = null;
+        }
+
         if(formatType==FormatType.VIDEO_ONLY) {
             DialogHelper.showAlert(rootPane,"注   意","原视频可能不支持单独下载视频\n(而缺少音频)\n点击确定继续下载",
-                    (actionEvent, jfxDialog) -> doDownload(url,formatType));
+                    (actionEvent, jfxDialog) -> doDownload(url,formatType,selectedFormatId));
         }
         else if(formatType==FormatType.AUDIO_ONLY) {
             DialogHelper.showAlert(rootPane,"注   意","原视频可能不支持单独下载音频\n点击确定继续下载",
-                    (actionEvent, jfxDialog) -> doDownload(url,formatType));
+                    (actionEvent, jfxDialog) -> doDownload(url,formatType,selectedFormatId));
         }
         else {
-            doDownload(url,formatType);
+            doDownload(url,formatType,selectedFormatId);
         }
     }//end click_download()
 
     /**
      * 执行下载工作
      */
-    private void doDownload(String url, FormatType formatType) {
+    private void doDownload(String url, FormatType formatType, Integer selectedFormatId) {
         String fileName = tf_rename.getText();
         Quality quality = cb_quality.getSelectionModel().getSelectedItem();
         FormatInfo formatInfo = cb_formatInfo.getSelectionModel().getSelectedItem();
@@ -225,6 +236,7 @@ public class VideoDownController extends AbstractPageController {
         setting.setFormatType(formatType);
         setting.setQuality(quality);
         setting.setFormatInfo(formatInfo);
+        setting.setQualityId(selectedFormatId);
 
         ProgressDialog progressDialog = DialogHelper.prepareProgress(rootPane,"开始下载...");
         progressDialog.show();
@@ -264,11 +276,11 @@ public class VideoDownController extends AbstractPageController {
             label_uploadDate.setText(info.uploadDate);
             label_id.setText(info.id);
             label_size.setText(info.width + " x " + info.height);
-            formatModelList.clear();
+            formatVOList.clear();
             List<VideoFormat> formatList = info.formats;
             for(VideoFormat data : formatList) {
-                FormatModel vo = FormatModel.build(isYoutubeUrl,data);
-                formatModelList.add(vo);
+                FormatVO vo = FormatVO.build(isYoutubeUrl,data);
+                formatVOList.add(vo);
             }
         }
         //获取失败
@@ -278,7 +290,7 @@ public class VideoDownController extends AbstractPageController {
             label_uploadDate.setText("获取失败");
             label_id.setText("获取失败");
             label_size.setText("获取失败");
-            formatModelList.clear();
+            formatVOList.clear();
         }
         tableView.refresh();
         progressDialog.dismiss();
