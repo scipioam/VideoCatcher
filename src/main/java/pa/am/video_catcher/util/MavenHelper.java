@@ -3,11 +3,15 @@ package pa.am.video_catcher.util;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import pa.am.video_catcher.bean.GlobalConst;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * maven配置文件工具类
@@ -41,9 +45,9 @@ public class MavenHelper {
     }
 
     /**
-     * 获取maven版本号
+     * 获取项目版本号
      */
-    public String getVersion() {
+    public String getProjectVersion() {
         String v;
         try {
             Model model = getModel();
@@ -53,6 +57,24 @@ public class MavenHelper {
             e.printStackTrace();
         }
         return v;
+    }
+
+    /**
+     * 获取项目版本号、youtube-dl版本号、ffmpeg版本号
+     */
+    public Map<String,String> getVersions() {
+        Map<String,String> map = new HashMap<>();
+        try {
+            Model model = getModel();
+            map.put(GlobalConst.VERSION_PROJECT,model.getVersion());
+            Properties properties = model.getProperties();
+            map.put(GlobalConst.VERSION_YOUTUBE_DL,properties.getProperty(GlobalConst.VERSION_YOUTUBE_DL));
+            map.put(GlobalConst.VERSION_FFMPEG,properties.getProperty(GlobalConst.VERSION_FFMPEG));
+        }catch (Exception e) {
+            map = null;
+            e.printStackTrace();
+        }
+        return map;
     }
 
 }

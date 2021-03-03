@@ -6,8 +6,11 @@ import pa.am.scipioutils.jfoenix.fxml.FxmlView;
 import pa.am.scipioutils.jfoenix.launch.AbstractApp;
 import pa.am.scipioutils.jfoenix.launch.AppInitThread;
 import pa.am.scipioutils.jfoenix.launch.SplashScreen;
+import pa.am.video_catcher.bean.GlobalConst;
 import pa.am.video_catcher.controller.MainController;
 import pa.am.video_catcher.util.MavenHelper;
+
+import java.util.Map;
 
 /**
  * @author Alan Min
@@ -21,7 +24,7 @@ public class App extends AbstractApp {
     private MainController mainController;
     private String savedLaunchMode;//配置文件里保存的启动哪个模式
     private boolean isSimpleMode;//是否启动极简模式（或者当前是否为极简模式）
-    private String version;
+    private Map<String,String> versionMap;
 
     public static void main(String[] args) {
         log.info("========== Application launch ==========");
@@ -33,10 +36,10 @@ public class App extends AbstractApp {
 
     @Override
     public void beforeShowMainView(FxmlView mainView) {
-        version = mavenHelper.getVersion();
+        versionMap = mavenHelper.getVersions();
 
         primaryStage.setResizable(false);
-        primaryStage.setTitle("Video Catcher - v"+version);
+        primaryStage.setTitle("Video Catcher - v"+versionMap.get(GlobalConst.VERSION_PROJECT));
         mainController = (MainController) mainView.getController();
         mainController.setApp(this);
         mainController.setThreadPool(threadPool);
@@ -79,7 +82,7 @@ public class App extends AbstractApp {
         this.savedLaunchMode = savedLaunchMode;
     }
 
-    public String getVersion() {
-        return version;
+    public Map<String, String> getVersionMap() {
+        return versionMap;
     }
 }

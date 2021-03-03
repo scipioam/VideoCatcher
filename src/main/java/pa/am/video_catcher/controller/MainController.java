@@ -154,7 +154,7 @@ public class MainController extends BaseController {
             aboutView = FxmlView.showView(aboutView,"/view/about.fxml",
                     "关  于", rootPane.getScene().getWindow());
             AboutController controller = (AboutController) aboutView.getController();
-            controller.setVersion(app.getVersion());
+            controller.setVersion(app.getVersionMap());
         }
         else{
             aboutView.getStage().show();
