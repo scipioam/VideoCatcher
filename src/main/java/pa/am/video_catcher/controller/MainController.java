@@ -36,6 +36,7 @@ public class MainController extends BaseController {
     private FxmlView biliView;
     private FxmlView simpleModeView;
     private FxmlView launchSettingView;
+    private FxmlView aboutView;
 
     @FXML
     private StackPane rootPane;
@@ -149,7 +150,15 @@ public class MainController extends BaseController {
      */
     @FXML
     private void menu_about() {
-
+        if(aboutView==null) {
+            aboutView = FxmlView.showView(aboutView,"/view/about.fxml",
+                    "关  于", rootPane.getScene().getWindow());
+            AboutController controller = (AboutController) aboutView.getController();
+            controller.setVersion(app.getVersion());
+        }
+        else{
+            aboutView.getStage().show();
+        }
     }
 
     /**

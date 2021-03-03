@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox alignment="CENTER" prefHeight="400.0" prefWidth="600.0" spacing="20.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pa.am.video_catcher.controller.AboutController">
+    <ImageView fx:id="imageView" fitHeight="200.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+    <Label text="视频抓取及下载" />
+    <Label text="开发者: AlanScipio" />
+    <Label fx:id="label_version" />
+</VBox>

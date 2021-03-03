@@ -21,6 +21,7 @@ public class App extends AbstractApp {
     private MainController mainController;
     private String savedLaunchMode;//配置文件里保存的启动哪个模式
     private boolean isSimpleMode;//是否启动极简模式（或者当前是否为极简模式）
+    private String version;
 
     public static void main(String[] args) {
         log.info("========== Application launch ==========");
@@ -32,7 +33,7 @@ public class App extends AbstractApp {
 
     @Override
     public void beforeShowMainView(FxmlView mainView) {
-        String version = mavenHelper.getVersion();
+        version = mavenHelper.getVersion();
 
         primaryStage.setResizable(false);
         primaryStage.setTitle("Video Catcher - v"+version);
@@ -76,5 +77,9 @@ public class App extends AbstractApp {
 
     public void setSavedLaunchMode(String savedLaunchMode) {
         this.savedLaunchMode = savedLaunchMode;
+    }
+
+    public String getVersion() {
+        return version;
     }
 }

@@ -133,7 +133,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>pa.am.bs_spider.App</mainClass>
+                            <mainClass>pa.am.video_catcher.App</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
