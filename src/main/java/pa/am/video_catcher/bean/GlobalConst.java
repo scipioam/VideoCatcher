@@ -16,7 +16,8 @@ public class GlobalConst {
 
     public static final long THREAD_KEEP_TIME = 2000L; //耗时子线程执行时间不低于2秒
 
-    public static final String FFMPEG_PATH = ".\\ffmpeg.exe";//ffmpeg路径
+    public static final String FFMPEG_PATH = ".\\lib\\ffmpeg.exe";//ffmpeg路径
+    public static final String YDL_PATH = ".\\lib\\youtube-dl.exe";//youtube-dl路径
 
     public static final String VERSION_PROJECT = "project.version";//项目版本号
     public static final String VERSION_YOUTUBE_DL = "youtube-dl.version";//youtube-dl版本号

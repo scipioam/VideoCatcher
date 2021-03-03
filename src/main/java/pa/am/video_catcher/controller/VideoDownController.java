@@ -2,7 +2,6 @@ package pa.am.video_catcher.controller;
 
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
-import com.sapher.youtubedl.YoutubeDL;
 import com.sapher.youtubedl.mapper.VideoFormat;
 import com.sapher.youtubedl.mapper.VideoInfo;
 import javafx.collections.FXCollections;
@@ -88,7 +87,6 @@ public class VideoDownController extends AbstractPageController {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        YoutubeDL.setExecutablePath("youtube-dl.exe");//设定执行路径为当前目录下的
         initTextFields();
         initComboBox();
         initTableView();

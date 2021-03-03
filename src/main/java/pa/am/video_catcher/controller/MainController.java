@@ -1,6 +1,7 @@
 package pa.am.video_catcher.controller;
 
 import com.jfoenix.controls.JFXTabPane;
+import com.sapher.youtubedl.YoutubeDL;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -15,6 +16,7 @@ import pa.am.scipioutils.jfoenix.fxml.BaseController;
 import pa.am.scipioutils.jfoenix.fxml.FXMLLoadHelper;
 import pa.am.scipioutils.jfoenix.fxml.FxmlView;
 import pa.am.video_catcher.App;
+import pa.am.video_catcher.bean.GlobalConst;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -60,6 +62,7 @@ public class MainController extends BaseController {
     }
 
     public void initContentPane() {
+        YoutubeDL.setExecutablePath(GlobalConst.YDL_PATH);//设定执行路径
         boolean isSimpleMode = app.isSimpleMode();
         //极简模式
         if(isSimpleMode) {
