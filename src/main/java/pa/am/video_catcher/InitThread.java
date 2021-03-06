@@ -31,6 +31,7 @@ public class InitThread extends AppInitThread {
     @Override
     public void init(AbstractApp abstractApp) {
         App thisApp = (App) abstractApp;
+        thisApp.setPrimaryStageTitle();
         PropertiesHelper helper = new PropertiesHelper(GlobalConst.CONFIG_FILE_PATH);
         try {
             //读取配置文件

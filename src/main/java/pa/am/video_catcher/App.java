@@ -1,5 +1,6 @@
 package pa.am.video_catcher;
 
+import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pa.am.scipioutils.jfoenix.fxml.FxmlView;
@@ -34,12 +35,16 @@ public class App extends AbstractApp {
         log.info("========== Application exit ==========");
     }
 
+    //=========================================================================
+
+
+    @Override
+    public void initPrimaryStage(Stage primaryStage) {
+        primaryStage.setResizable(false);
+    }
+
     @Override
     public void beforeShowMainView(FxmlView mainView) {
-        versionMap = mavenHelper.getVersions();
-
-        primaryStage.setResizable(false);
-        primaryStage.setTitle("Video Catcher - v"+versionMap.get(GlobalConst.VERSION_PROJECT));
         mainController = (MainController) mainView.getController();
         mainController.setApp(this);
         mainController.setThreadPool(threadPool);
@@ -65,6 +70,19 @@ public class App extends AbstractApp {
     public String getIconPath() {
         return "/img/logo.png";
     }
+
+//    @Override
+//    public String getTitle() {
+//
+//        return ;
+//    }
+
+    public void setPrimaryStageTitle() {
+        versionMap = mavenHelper.getVersions();
+        primaryStage.setTitle("Video Catcher - v"+versionMap.get(GlobalConst.VERSION_PROJECT));
+    }
+
+    //=========================================================================
 
     public boolean isSimpleMode() {
         return isSimpleMode;
