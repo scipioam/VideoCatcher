@@ -18,8 +18,8 @@ import java.util.Map;
  * <p>Provide an interface for youtube-dl executable</p>
  *
  * <p>
- *     For more information on youtube-dl, please see
- *     <a href="https://github.com/rg3/youtube-dl/blob/master/README.md">YoutubeDL Documentation</a>
+ * For more information on youtube-dl, please see
+ * <a href="https://github.com/rg3/youtube-dl/blob/master/README.md">YoutubeDL Documentation</a>
  * </p>
  */
 public class YoutubeDL {
@@ -31,6 +31,7 @@ public class YoutubeDL {
 
     /**
      * Append executable name to command
+     *
      * @param command Command string
      * @return Command string
      */
@@ -40,22 +41,27 @@ public class YoutubeDL {
 
     /**
      * Execute youtube-dl request
+     *
      * @param request request object
      * @return response object
-     * @throws YoutubeDLException
+     * @throws YoutubeDLException download exception
      */
-    public static YoutubeDLResponse execute(YoutubeDLRequest request) throws YoutubeDLException {
+    public static YoutubeDLResponse execute(YoutubeDLRequest request) throws YoutubeDLException, FormatNotAvailableException {
         return execute(request, null);
     }
 
     /**
      * Execute youtube-dl request
-     * @param request request object
+     *
+     * @param request  request object
      * @param callback callback
      * @return response object
-     * @throws YoutubeDLException
+     * @throws YoutubeDLException download exception
      */
-    public static YoutubeDLResponse execute(YoutubeDLRequest request, DownloadProgressCallback callback) throws YoutubeDLException {
+    public static YoutubeDLResponse execute(YoutubeDLRequest request, DownloadProgressCallback callback)
+            throws YoutubeDLException, FormatNotAvailableException {
+
+        //TODO FormatNotAvailableException未实现
 
         String command = buildCommand(request.buildOptions());
         String directory = request.getDirectory();
@@ -73,7 +79,7 @@ public class YoutubeDL {
         ProcessBuilder processBuilder = new ProcessBuilder(split);
 
         // Define directory if one is passed
-        if(directory != null)
+        if (directory != null)
             processBuilder.directory(new File(directory));
 
         try {
@@ -101,7 +107,7 @@ public class YoutubeDL {
         String out = outBuffer.toString();
         String err = errBuffer.toString();
 
-        if(exitCode > 0) {
+        if (exitCode > 0) {
             throw new YoutubeDLException(err);
         }
 
@@ -111,7 +117,7 @@ public class YoutubeDL {
                 command,
                 options,
                 directory,
-                exitCode ,
+                exitCode,
                 elapsedTime,
                 out,
                 err,
@@ -124,27 +130,29 @@ public class YoutubeDL {
 
     /**
      * Get youtube-dl executable version
+     *
      * @return version string
-     * @throws YoutubeDLException
+     * @throws YoutubeDLException net exception
      */
     public static String getVersion() throws YoutubeDLException {
-        YoutubeDLRequest request = new YoutubeDLRequest();
-        request.setOption("version");
+        YoutubeDLRequest request = YoutubeDLRequest.create()
+                .setOption("version");
         return YoutubeDL.execute(request).getOut();
     }
 
     /**
      * Retrieve all information available on a video
+     *
      * @param url Video url
      * @return Video info
-     * @throws YoutubeDLException
+     * @throws YoutubeDLException net exception
      */
-    public static VideoInfo getVideoInfo(String url) throws YoutubeDLException  {
+    public static VideoInfo getVideoInfo(String url) throws YoutubeDLException {
 
         // Build request
-        YoutubeDLRequest request = new YoutubeDLRequest(url);
-        request.setOption("dump-json");
-        request.setOption("no-playlist");
+        YoutubeDLRequest request = YoutubeDLRequest.create(url)
+                .setOption("dump-json")
+                .setOption("no-playlist");
         YoutubeDLResponse response = YoutubeDL.execute(request);
 
         // Parse result
@@ -162,9 +170,10 @@ public class YoutubeDL {
 
     /**
      * List formats
+     *
      * @param url Video url
      * @return list of formats
-     * @throws YoutubeDLException
+     * @throws YoutubeDLException net exception
      */
     public static List<VideoFormat> getFormats(String url) throws YoutubeDLException {
         VideoInfo info = getVideoInfo(url);
@@ -173,9 +182,10 @@ public class YoutubeDL {
 
     /**
      * List thumbnails
+     *
      * @param url Video url
      * @return list of thumbnail
-     * @throws YoutubeDLException
+     * @throws YoutubeDLException net exception
      */
     public static List<VideoThumbnail> getThumbnails(String url) throws YoutubeDLException {
         VideoInfo info = getVideoInfo(url);
@@ -184,9 +194,10 @@ public class YoutubeDL {
 
     /**
      * List categories
+     *
      * @param url Video url
      * @return list of category
-     * @throws YoutubeDLException
+     * @throws YoutubeDLException net exception
      */
     public static List<String> getCategories(String url) throws YoutubeDLException {
         VideoInfo info = getVideoInfo(url);
@@ -195,9 +206,10 @@ public class YoutubeDL {
 
     /**
      * List tags
+     *
      * @param url Video url
      * @return list of tag
-     * @throws YoutubeDLException
+     * @throws YoutubeDLException net exception
      */
     public static List<String> getTags(String url) throws YoutubeDLException {
         VideoInfo info = getVideoInfo(url);
@@ -206,17 +218,19 @@ public class YoutubeDL {
 
     /**
      * Get command executable or path to the executable
+     *
      * @return path string
      */
-    public static String getExecutablePath(){
+    public static String getExecutablePath() {
         return executablePath;
     }
 
     /**
      * Set path to use for the command
+     *
      * @param path String path to the executable
      */
-    public static void setExecutablePath(String path){
+    public static void setExecutablePath(String path) {
         executablePath = path;
     }
 }
