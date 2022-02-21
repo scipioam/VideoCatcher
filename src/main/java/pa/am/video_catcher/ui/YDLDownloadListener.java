@@ -23,7 +23,7 @@ public class YDLDownloadListener implements DownloadProgressCallback {
     }
 
     @Override
-    public void onProgressUpdate(float progress, long etaInSeconds) {
+    public void onProgressUpdate(double progress, long etaInSeconds) {
         //youtube下载时的进度显示
         if(isYoutube && !isFormat) {
             if(progress>lastProgress) {

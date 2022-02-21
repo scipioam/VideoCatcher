@@ -1,13 +1,13 @@
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
+import com.github.ScipioAM.scipio_utils_io.parser.GsonUtil;
+import com.github.ScipioAM.scipio_utils_net.http.HttpUtil;
+import com.github.ScipioAM.scipio_utils_net.http.bean.ResponseResult;
+import com.github.ScipioAM.scipio_utils_net.http.common.ResponseDataMode;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.Test;
-import pa.am.scipioutils.io.parser.GsonUtil;
-import pa.am.scipioutils.net.http.HttpUtil;
-import pa.am.scipioutils.net.http.common.Response;
-import pa.am.scipioutils.net.http.common.ResponseDataMode;
-import pa.am.video_catcher.bean.GlobalConst;
 import pa.am.video_catcher.catcher.bilibili.BilibiliCatcher;
 import pa.am.video_catcher.catcher.bilibili.BilibiliUtil;
 import pa.am.video_catcher.catcher.bilibili.bean.BilibiliApi;
@@ -15,7 +15,6 @@ import pa.am.video_catcher.catcher.bilibili.bean.DownloadMode;
 import pa.am.video_catcher.catcher.bilibili.bean.media_play.Media;
 import pa.am.video_catcher.catcher.bilibili.bean.media_play.MediaPlay;
 import pa.am.video_catcher.catcher.bilibili.bean.video_info.VideoInfo;
-import pa.am.video_catcher.util.WindowsCmdUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,7 +36,7 @@ public class BiliTest {
 
         HttpUtil httpUtil = new HttpUtil();
         httpUtil.setDefaultUserAgent();
-        Response response = httpUtil.get(apiUrl);
+        ResponseResult response = httpUtil.get(apiUrl);
         if(response.getResponseCode()>0) {
             String json = response.getData();
             System.out.println("json:\n"+json);
@@ -66,7 +65,7 @@ public class BiliTest {
         HttpUtil httpUtil = new HttpUtil();
         httpUtil.setDefaultUserAgent();
 
-        Response response = httpUtil.get(VIDEO_URL);
+        ResponseResult response = httpUtil.get(VIDEO_URL);
         if(response.getResponseCode()>0) {
             Document document = Jsoup.parse(response.getData());
             Elements scriptNodesArr = document.getElementsByTag("script");
@@ -101,7 +100,7 @@ public class BiliTest {
         httpUtil.setDefaultUserAgent();
 
         System.out.println("开始获取视频信息");
-        Response response = httpUtil.get(VIDEO_URL);
+        ResponseResult response = httpUtil.get(VIDEO_URL);
         if(response.getResponseCode()>0) {
             Document document = Jsoup.parse(response.getData());
             Elements scriptNodesArr = document.getElementsByTag("script");
@@ -141,14 +140,14 @@ public class BiliTest {
      * 下载
      */
     private void download(HttpUtil httpUtil, Media media) {
-        httpUtil.setReqHeaderParam("referer","https://www.bilibili.com/");//必加，否则返回403错误
+        httpUtil.addRequestHeader("referer","https://www.bilibili.com/");//必加，否则返回403错误
 //        httpUtil.setReqHeaderParam("range","byte=0-9999");//部分下载
 
         InputStream in = null;
         FileOutputStream out = null;
         try {
             System.out.println("开始请求下载");
-            Response response = httpUtil.get(media.getBaseUrl(), ResponseDataMode.STREAM_ONLY);
+            ResponseResult response = httpUtil.get(media.getBaseUrl(), ResponseDataMode.STREAM_ONLY);
             int responseCode = response.getResponseCode();
             if(responseCode<200||responseCode>=300){
                 throw new RuntimeException("Request failed, response code:"+response.getResponseCode());
@@ -157,9 +156,9 @@ public class BiliTest {
 
             //下载总字节数
             long totalBytes;
-            List<String> list = response.getHeader("Content-Length");
-            if(list!=null && list.size()>0) {
-                totalBytes = Long.parseLong(list.get(0));
+            String contentLenStr = response.getHeader("Content-Length");
+            if(StringUtil.isNotNull(contentLenStr)) {
+                totalBytes = Long.parseLong(contentLenStr);
                 System.out.println("总字节数："+totalBytes);
             }
             else {
@@ -186,7 +185,7 @@ public class BiliTest {
             out.flush();
             System.out.println("下载完成，总字节数:"+downloadFile.length());
         }catch (Exception e){
-            System.out.println("下载失败, "+e.toString());
+            System.out.println("下载失败, "+e);
             e.printStackTrace();
         }finally {
             try {

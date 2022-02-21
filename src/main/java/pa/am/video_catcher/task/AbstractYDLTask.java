@@ -56,7 +56,7 @@ public abstract class AbstractYDLTask extends AbstractTask{
         }catch (FormatNotAvailableException e0) {
             onFinishedWithError(startTime,true);
             log.warn("Requested format not available");
-        }catch (YoutubeDLException e1) {
+        } catch (YoutubeDLException e1) {
             onFinishedWithError(startTime,false);
             log.error("Got an error when download video: {}",e1.toString());
             e1.printStackTrace();
