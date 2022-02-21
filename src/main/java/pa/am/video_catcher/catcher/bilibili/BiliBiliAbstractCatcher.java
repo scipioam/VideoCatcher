@@ -1,15 +1,15 @@
 package pa.am.video_catcher.catcher.bilibili;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
+import com.github.ScipioAM.scipio_utils_io.parser.GsonUtil;
+import com.github.ScipioAM.scipio_utils_net.http.HttpUtil;
+import com.github.ScipioAM.scipio_utils_net.http.bean.ResponseResult;
+import com.github.ScipioAM.scipio_utils_net.http.common.ResponseDataMode;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import pa.am.scipioutils.common.StringUtil;
-import pa.am.scipioutils.io.parser.GsonUtil;
-import pa.am.scipioutils.net.http.HttpUtil;
-import pa.am.scipioutils.net.http.common.Response;
-import pa.am.scipioutils.net.http.common.ResponseDataMode;
 import pa.am.video_catcher.bean.GlobalConst;
 import pa.am.video_catcher.catcher.bilibili.bean.DownloadMode;
 import pa.am.video_catcher.catcher.bilibili.bean.BilibiliApi;
@@ -74,7 +74,7 @@ public abstract class BiliBiliAbstractCatcher {
         check(url);
         log.info("start get BilibiliApi data from Html");
         //发起请求
-        Response response = httpUtil.get(url);
+        ResponseResult response = httpUtil.get(url);
         int responseCode = response.getResponseCode();
         //请求成功
         if(responseCode>=200&&responseCode<300) {
@@ -126,7 +126,7 @@ public abstract class BiliBiliAbstractCatcher {
         String apiUrl = BilibiliApi.VIDEO_API_URL_PREFIX+"&avid="+videoInfo.getAid()+"&cid="+cid;
         check(apiUrl);
         log.info("start get json from api");
-        Response response = httpUtil.get(apiUrl);
+        ResponseResult response = httpUtil.get(apiUrl);
         int responseCode = response.getResponseCode();
         //请求成功
         if(responseCode>=200&&responseCode<300) {
@@ -179,18 +179,16 @@ public abstract class BiliBiliAbstractCatcher {
         while (retryCount<retryLimit) {
             try {
                 //发起请求
-                Response response = httpUtil.get(downloadUrl, ResponseDataMode.STREAM_ONLY);
+                ResponseResult response = httpUtil.get(downloadUrl, ResponseDataMode.STREAM_ONLY);
                 int responseCode = response.getResponseCode();
                 if(responseCode<200||responseCode>=300){
                     throw new RuntimeException("Request failed, response code:"+response.getResponseCode());
                 }
 
                 //获取要下载的总字节数
-                long totalBytes = 0L;
-                List<String> list = response.getHeader("Content-Length");
-                if(list!=null && list.size()>0) {
-                    totalBytes = Long.parseLong(list.get(0));
-                }
+                long totalBytes;
+                String contentLenStr = response.getHeader("Content-Length");
+                totalBytes = Long.parseLong(contentLenStr);
 
                 in = response.getResponseStream();
                 if(in==null) {

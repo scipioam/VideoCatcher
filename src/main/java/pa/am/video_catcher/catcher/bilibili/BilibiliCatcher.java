@@ -1,10 +1,10 @@
 package pa.am.video_catcher.catcher.bilibili;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
+import com.github.ScipioAM.scipio_utils_io.FileUtil;
+import com.github.ScipioAM.scipio_utils_net.http.bean.ResponseResult;
+import com.github.ScipioAM.scipio_utils_net.http.common.ResponseDataMode;
 import org.apache.logging.log4j.LogManager;
-import pa.am.scipioutils.common.StringUtil;
-import pa.am.scipioutils.io.FileUtil;
-import pa.am.scipioutils.net.http.common.Response;
-import pa.am.scipioutils.net.http.common.ResponseDataMode;
 import pa.am.video_catcher.catcher.bilibili.bean.DownloadMode;
 import pa.am.video_catcher.catcher.bilibili.bean.media_play.Media;
 import pa.am.video_catcher.catcher.bilibili.bean.media_play.MediaPlay;
@@ -65,7 +65,7 @@ public class BilibiliCatcher extends BiliBiliAbstractCatcher{
         log.info("start request html page for download cover");
         while (retryCount<retryLimit) {
             //发起图片请求
-            Response response = httpUtil.get(coverUrl, ResponseDataMode.STREAM_ONLY);
+            ResponseResult response = httpUtil.get(coverUrl, ResponseDataMode.STREAM_ONLY);
             //开始下载图片
             InputStream in = response.getResponseStream();
             try {
@@ -112,7 +112,7 @@ public class BilibiliCatcher extends BiliBiliAbstractCatcher{
             dirFile.mkdirs();
         }
         //下载
-        httpUtil.setReqHeaderParam("referer","https://www.bilibili.com/");//必加，否则返回403错误
+        httpUtil.addRequestHeader("referer","https://www.bilibili.com/");//必加，否则返回403错误
         if(downloadMode==DownloadMode.VIDEO_ONLY) {
             log.info("Download mode is VIDEO_ONLY");
             Media video = (qualityId==null ? mediaPlay.getDefaultVideo() : mediaPlay.getBestQualityVideo());
@@ -163,7 +163,7 @@ public class BilibiliCatcher extends BiliBiliAbstractCatcher{
         if(StringUtil.isNull(sessdata) || StringUtil.isNull(bili_jct)) {
             return this;
         }
-        httpUtil.setReqHeaderParam("Cookie","SESSDATA="+sessdata+"; bili_jct="+bili_jct);
+        httpUtil.addRequestHeader("Cookie","SESSDATA="+sessdata+"; bili_jct="+bili_jct);
         return this;
     }
 

@@ -1,6 +1,6 @@
 package pa.am.video_catcher.catcher.bilibili.bean.media_play;
 
-import org.jetbrains.annotations.NotNull;
+import com.github.ScipioAM.scipio_utils_common.validation.annotation.NotNull;
 
 import java.util.List;
 

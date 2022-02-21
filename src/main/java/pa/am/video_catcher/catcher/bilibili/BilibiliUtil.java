@@ -1,12 +1,10 @@
 package pa.am.video_catcher.catcher.bilibili;
 
-import pa.am.scipioutils.common.StringUtil;
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
 
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * B站工具类

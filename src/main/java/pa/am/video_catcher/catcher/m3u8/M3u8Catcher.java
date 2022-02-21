@@ -1,8 +1,8 @@
 package pa.am.video_catcher.catcher.m3u8;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pa.am.scipioutils.common.StringUtil;
 import pa.am.video_catcher.catcher.m3u8.bean.M3u8VO;
 
 import java.io.File;

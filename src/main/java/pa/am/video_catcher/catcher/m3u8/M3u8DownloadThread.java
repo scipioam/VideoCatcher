@@ -1,13 +1,13 @@
 package pa.am.video_catcher.catcher.m3u8;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
+import com.github.ScipioAM.scipio_utils_crypto.CryptoUtil;
+import com.github.ScipioAM.scipio_utils_crypto.mode.SCAlgorithm;
+import com.github.ScipioAM.scipio_utils_net.http.HttpUtil;
+import com.github.ScipioAM.scipio_utils_net.http.bean.ResponseResult;
+import com.github.ScipioAM.scipio_utils_net.http.common.ResponseDataMode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pa.am.scipioutils.common.StringUtil;
-import pa.am.scipioutils.crypto.CryptoUtil;
-import pa.am.scipioutils.crypto.mode.SCAlgorithm;
-import pa.am.scipioutils.net.http.HttpUtil;
-import pa.am.scipioutils.net.http.common.Response;
-import pa.am.scipioutils.net.http.common.ResponseDataMode;
 import pa.am.video_catcher.catcher.m3u8.bean.ErrorVO;
 
 import javax.crypto.spec.IvParameterSpec;
@@ -126,7 +126,7 @@ public class M3u8DownloadThread implements Runnable{
         while (count < retryLimit) {
             try {
                 //发起请求
-                Response response = httpUtil.get(url, ResponseDataMode.STREAM_ONLY);
+                ResponseResult response = httpUtil.get(url, ResponseDataMode.STREAM_ONLY);
                 int responseCode = response.getResponseCode();
                 if(responseCode<=-1) {
                     log.warn("[{}]Http error, response code: {}, index: {}, url: {}", count, responseCode, index, url);

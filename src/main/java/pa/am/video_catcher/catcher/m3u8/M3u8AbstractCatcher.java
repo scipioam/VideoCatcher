@@ -1,8 +1,8 @@
 package pa.am.video_catcher.catcher.m3u8;
 
-import pa.am.scipioutils.common.StringUtil;
-import pa.am.scipioutils.net.http.HttpUtil;
-import pa.am.scipioutils.net.http.common.Response;
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
+import com.github.ScipioAM.scipio_utils_net.http.HttpUtil;
+import com.github.ScipioAM.scipio_utils_net.http.bean.ResponseResult;
 import pa.am.video_catcher.catcher.m3u8.bean.M3u8VO;
 
 import java.io.File;
@@ -148,7 +148,7 @@ public abstract class M3u8AbstractCatcher {
         }
         String urlContent = null;
         while (count<retryLimit) {
-            Response response = httpUtil.get(url);
+            ResponseResult response = httpUtil.get(url);
             if(response.getResponseCode()<=-1) {
                 count++;
             }

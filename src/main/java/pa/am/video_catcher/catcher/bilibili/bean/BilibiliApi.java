@@ -1,6 +1,6 @@
 package pa.am.video_catcher.catcher.bilibili.bean;
 
-import pa.am.scipioutils.io.parser.GsonUtil;
+import com.github.ScipioAM.scipio_utils_io.parser.GsonUtil;
 import pa.am.video_catcher.catcher.bilibili.bean.media_play.MediaPlay;
 import pa.am.video_catcher.catcher.bilibili.bean.video_info.VideoInfo;
 
