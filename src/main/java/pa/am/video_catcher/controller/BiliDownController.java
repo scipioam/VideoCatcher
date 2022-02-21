@@ -1,5 +1,7 @@
 package pa.am.video_catcher.controller;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
+import com.github.ScipioAM.scipio_utils_common.time.DateTimeUtil;
 import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import javafx.collections.FXCollections;
@@ -9,12 +11,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TreeItem;
 import javafx.util.StringConverter;
-import pa.am.scipioutils.common.DateTimeUtil;
-import pa.am.scipioutils.common.StringUtil;
-import pa.am.scipioutils.jfoenix.DialogHelper;
-import pa.am.scipioutils.jfoenix.ProgressDialog;
-import pa.am.scipioutils.jfoenix.fxml.FxmlView;
-import pa.am.scipioutils.jfoenix.snackbar.JFXSnackbarHelper;
+import com.github.ScipioAM.scipio_utils_javafx.DialogHelper;
+import com.github.ScipioAM.scipio_utils_javafx.ProgressDialog;
+import com.github.ScipioAM.scipio_utils_javafx.fxml.FxmlView;
+import com.github.ScipioAM.scipio_utils_javafx.snackbar.JFXSnackbarHelper;
 import pa.am.video_catcher.bean.ui.ColumnType;
 import pa.am.video_catcher.bean.ui.FormatVO;
 import pa.am.video_catcher.bean.video.BiliPage;

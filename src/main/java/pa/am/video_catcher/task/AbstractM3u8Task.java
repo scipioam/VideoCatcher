@@ -1,8 +1,8 @@
 package pa.am.video_catcher.task;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
 import javafx.scene.control.ProgressIndicator;
 import org.apache.logging.log4j.Logger;
-import pa.am.scipioutils.common.StringUtil;
 import pa.am.video_catcher.bean.GlobalConst;
 import pa.am.video_catcher.catcher.m3u8.DownloadListener;
 import pa.am.video_catcher.catcher.m3u8.M3u8Catcher;

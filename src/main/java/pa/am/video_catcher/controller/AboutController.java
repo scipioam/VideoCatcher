@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import pa.am.scipioutils.jfoenix.fxml.BaseController;
+import com.github.ScipioAM.scipio_utils_javafx.fxml.BaseController;
 import pa.am.video_catcher.bean.GlobalConst;
 
 import java.net.URL;
@@ -31,10 +31,10 @@ public class AboutController extends BaseController {
         imageView.setImage(new Image("/img/developer_logo.png"));
     }
 
-    public void setVersion(Map<String,String> versionMap) {
-        label_projectVersion.setText("程序版本: "+versionMap.get(GlobalConst.VERSION_PROJECT));
-        label_ydlVersion.setText("youtube-dl版本: "+versionMap.get(GlobalConst.VERSION_YOUTUBE_DL));
-        label_ffmpegVersion.setText("ffmpeg版本: "+versionMap.get(GlobalConst.VERSION_FFMPEG));
+    public void setVersion(Map<String, String> versionMap) {
+        label_projectVersion.setText("程序版本: " + versionMap.get(GlobalConst.VERSION_PROJECT));
+        label_ydlVersion.setText("youtube-dl版本: " + versionMap.get(GlobalConst.VERSION_YOUTUBE_DL));
+        label_ffmpegVersion.setText("ffmpeg版本: " + versionMap.get(GlobalConst.VERSION_FFMPEG));
     }
 
 }

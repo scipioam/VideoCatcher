@@ -6,7 +6,7 @@
 
     <groupId>pa.am</groupId>
     <artifactId>video-catcher</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
     <description>Video Catcher for http link</description>
 
@@ -17,6 +17,17 @@
         </developer>
     </developers>
 
+    <repositories>
+        <repository>
+            <id>aliyunmaven</id>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
     <properties>
         <youtube-dl.version>2021.03.03</youtube-dl.version>
         <ffmpeg.version>2021.02.28</ffmpeg.version>
@@ -26,24 +37,16 @@
         <maven.compiler.target>8</maven.compiler.target>
 
         <junit.version>4.13.2</junit.version>
-        <log4j.version>2.13.3</log4j.version>
+        <log4j.version>2.17.0</log4j.version>
 
-        <jsoup.version>1.14.2</jsoup.version>
-<!--        <selenium.version>3.141.59</selenium.version>-->
-        <utils.verison>1.0.0</utils.verison>
-        <maven.model.version>3.6.3</maven.model.version>
+        <jsoup.version>1.14.3</jsoup.version>
+        <scipio.utils.verison>1.0.9</scipio.utils.verison>
+        <maven.model.version>3.8.1</maven.model.version>
         <youtube-dl.wrapper.version>1.1</youtube-dl.wrapper.version>
 
         <jfoenix.version>8.0.10</jfoenix.version>
         <fontawesomefx.version>8.9</fontawesomefx.version>
     </properties>
-
-<!--    <repositories>-->
-<!--        <repository>-->
-<!--            <id>jitpack.io</id>-->
-<!--            <url>https://jitpack.io</url>-->
-<!--        </repository>-->
-<!--    </repositories>-->
 
     <dependencies>
         <!--junit-->
@@ -71,29 +74,17 @@
             <artifactId>jsoup</artifactId>
             <version>${jsoup.version}</version>
         </dependency>
-        <!--Selenium-->
-<!--        <dependency>-->
-<!--            <groupId>org.seleniumhq.selenium</groupId>-->
-<!--            <artifactId>selenium-java</artifactId>-->
-<!--            <version>${selenium.version}</version>-->
-<!--        </dependency>-->
         <!--我自己的加解密模块-->
         <dependency>
-            <groupId>pa.am</groupId>
+            <groupId>com.github.ScipioAM.scipio-utils</groupId>
             <artifactId>scipio-utils-crypto</artifactId>
-            <version>${utils.verison}</version>
+            <version>${scipio.utils.verison}</version>
         </dependency>
         <!--我自己的网络模块-->
         <dependency>
-            <groupId>pa.am</groupId>
+            <groupId>com.github.ScipioAM.scipio-utils</groupId>
             <artifactId>scipio-utils-net</artifactId>
-            <version>${utils.verison}</version>
-        </dependency>
-        <!--我自己的通用工具模块-->
-        <dependency>
-            <groupId>pa.am</groupId>
-            <artifactId>scipio-utils-common</artifactId>
-            <version>${utils.verison}</version>
+            <version>${scipio.utils.verison}</version>
         </dependency>
         <!--maven辅助工具-->
         <dependency>
@@ -102,11 +93,11 @@
             <version>${maven.model.version}</version>
         </dependency>
         <!-- youtube-dl -->
-        <dependency>
-            <groupId>com.sapher</groupId>
-            <artifactId>youtubedl</artifactId>
-            <version>${youtube-dl.wrapper.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.sapher</groupId>-->
+<!--            <artifactId>youtubedl-java</artifactId>-->
+<!--            <version>${youtube-dl.wrapper.version}</version>-->
+<!--        </dependency>-->
         <!-- ===================== UI ===================== -->
         <!--jfoenix-->
         <dependency>
@@ -116,9 +107,9 @@
         </dependency>
         <!--我自己的易用UI功能库-->
         <dependency>
-            <groupId>pa.am</groupId>
-            <artifactId>scipio-utils-jfoenix</artifactId>
-            <version>${utils.verison}</version>
+            <groupId>com.github.ScipioAM.scipio-utils</groupId>
+            <artifactId>scipio-utils-javafx</artifactId>
+            <version>${scipio.utils.verison}</version>
         </dependency>
         <!-- FontAwesomeFX -->
         <dependency>

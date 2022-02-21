@@ -1,7 +1,7 @@
 package pa.am.video_catcher.ui;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
 import javafx.scene.control.TextFormatter;
-import pa.am.scipioutils.common.StringUtil;
 
 import java.util.function.UnaryOperator;
 

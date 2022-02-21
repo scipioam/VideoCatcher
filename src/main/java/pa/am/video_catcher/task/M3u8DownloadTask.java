@@ -1,9 +1,8 @@
 package pa.am.video_catcher.task;
 
+import com.github.ScipioAM.scipio_utils_javafx.DialogHelper;
 import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
-import pa.am.scipioutils.common.StringUtil;
-import pa.am.scipioutils.jfoenix.DialogHelper;
 import pa.am.video_catcher.controller.M3u8Controller;
 
 import java.io.File;

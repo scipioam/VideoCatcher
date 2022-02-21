@@ -1,14 +1,14 @@
 package pa.am.video_catcher.controller;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
 import com.jfoenix.controls.JFXProgressBar;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import pa.am.scipioutils.common.StringUtil;
-import pa.am.scipioutils.jfoenix.ProgressDialog;
-import pa.am.scipioutils.jfoenix.fxml.BaseController;
-import pa.am.scipioutils.jfoenix.snackbar.JFXSnackbarHelper;
-import pa.am.scipioutils.jfoenix.util.FileChooseHelper;
+import com.github.ScipioAM.scipio_utils_javafx.ProgressDialog;
+import com.github.ScipioAM.scipio_utils_javafx.fxml.BaseController;
+import com.github.ScipioAM.scipio_utils_javafx.snackbar.JFXSnackbarHelper;
+import com.github.ScipioAM.scipio_utils_javafx.util.FileChooseHelper;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;

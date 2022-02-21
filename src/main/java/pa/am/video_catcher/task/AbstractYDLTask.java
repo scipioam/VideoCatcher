@@ -1,8 +1,8 @@
 package pa.am.video_catcher.task;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
 import com.sapher.youtubedl.*;
 import org.apache.logging.log4j.Logger;
-import pa.am.scipioutils.common.StringUtil;
 import pa.am.video_catcher.bean.video.FormatInfo;
 import pa.am.video_catcher.bean.video.FormatType;
 import pa.am.video_catcher.bean.video.Quality;

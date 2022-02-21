@@ -1,12 +1,12 @@
 package pa.am.video_catcher;
 
+import com.github.ScipioAM.scipio_utils_javafx.fxml.FxmlView;
+import com.github.ScipioAM.scipio_utils_javafx.launch.AbstractApp;
+import com.github.ScipioAM.scipio_utils_javafx.launch.AppInitThread;
+import com.github.ScipioAM.scipio_utils_javafx.launch.SplashScreen;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pa.am.scipioutils.jfoenix.fxml.FxmlView;
-import pa.am.scipioutils.jfoenix.launch.AbstractApp;
-import pa.am.scipioutils.jfoenix.launch.AppInitThread;
-import pa.am.scipioutils.jfoenix.launch.SplashScreen;
 import pa.am.video_catcher.bean.GlobalConst;
 import pa.am.video_catcher.controller.MainController;
 import pa.am.video_catcher.util.MavenHelper;

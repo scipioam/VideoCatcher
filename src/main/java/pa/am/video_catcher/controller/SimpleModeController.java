@@ -1,12 +1,12 @@
 package pa.am.video_catcher.controller;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
 import com.jfoenix.controls.JFXProgressBar;
 import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import pa.am.scipioutils.common.StringUtil;
 import pa.am.video_catcher.bean.video.*;
 import pa.am.video_catcher.catcher.bilibili.bean.BilibiliApi;
 import pa.am.video_catcher.catcher.bilibili.bean.DownloadMode;
@@ -16,6 +16,7 @@ import pa.am.video_catcher.task.SimpleVideoDownTask;
 import pa.am.video_catcher.util.DesktopUtil;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 /**
@@ -37,7 +38,7 @@ public class SimpleModeController extends AbstractPageController{
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         progressBar.setVisible(false);
-        imageView.setImage(new Image(getClass().getResourceAsStream("/img/simple_mode_logo.png")));
+        imageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/img/simple_mode_logo.png"))));
     }
 
     //=========================================================================

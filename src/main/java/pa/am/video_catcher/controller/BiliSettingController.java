@@ -1,12 +1,12 @@
 package pa.am.video_catcher.controller;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
+import com.github.ScipioAM.scipio_utils_javafx.fxml.BaseController;
+import com.github.ScipioAM.scipio_utils_javafx.snackbar.JFXSnackbarHelper;
 import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import pa.am.scipioutils.common.StringUtil;
-import pa.am.scipioutils.jfoenix.fxml.BaseController;
-import pa.am.scipioutils.jfoenix.snackbar.JFXSnackbarHelper;
 import pa.am.video_catcher.catcher.bilibili.bean.BilibiliApi;
 
 import java.net.URL;

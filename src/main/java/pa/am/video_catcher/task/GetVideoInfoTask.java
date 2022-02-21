@@ -1,10 +1,10 @@
 package pa.am.video_catcher.task;
 
+import com.github.ScipioAM.scipio_utils_javafx.ProgressDialog;
 import com.sapher.youtubedl.YoutubeDL;
 import com.sapher.youtubedl.mapper.VideoInfo;
 import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
-import pa.am.scipioutils.jfoenix.ProgressDialog;
 import pa.am.video_catcher.bean.GlobalConst;
 import pa.am.video_catcher.controller.VideoDownController;
 

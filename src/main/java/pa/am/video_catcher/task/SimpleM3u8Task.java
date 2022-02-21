@@ -1,10 +1,10 @@
 package pa.am.video_catcher.task;
 
+import com.github.ScipioAM.scipio_utils_javafx.DialogHelper;
 import com.jfoenix.controls.JFXProgressBar;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import org.apache.logging.log4j.LogManager;
-import pa.am.scipioutils.jfoenix.DialogHelper;
 import pa.am.video_catcher.controller.SimpleModeController;
 
 import java.io.File;

@@ -1,7 +1,7 @@
 package pa.am.video_catcher.task;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
 import org.apache.logging.log4j.Logger;
-import pa.am.scipioutils.common.StringUtil;
 import pa.am.video_catcher.bean.video.BiliPage;
 import pa.am.video_catcher.bean.video.Setting;
 import pa.am.video_catcher.catcher.bilibili.BilibiliCatcher;

@@ -1,5 +1,8 @@
 package pa.am.video_catcher.controller;
 
+import com.github.ScipioAM.scipio_utils_common.config.PropertiesHelper;
+import com.github.ScipioAM.scipio_utils_javafx.DialogHelper;
+import com.github.ScipioAM.scipio_utils_javafx.fxml.BaseController;
 import com.jfoenix.controls.JFXRadioButton;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleGroup;
@@ -7,9 +10,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pa.am.scipioutils.common.PropertiesHelper;
-import pa.am.scipioutils.jfoenix.DialogHelper;
-import pa.am.scipioutils.jfoenix.fxml.BaseController;
 import pa.am.video_catcher.App;
 import pa.am.video_catcher.bean.GlobalConst;
 

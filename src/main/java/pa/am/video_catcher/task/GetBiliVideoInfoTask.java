@@ -1,9 +1,9 @@
 package pa.am.video_catcher.task;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
+import com.github.ScipioAM.scipio_utils_javafx.ProgressDialog;
 import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
-import pa.am.scipioutils.common.StringUtil;
-import pa.am.scipioutils.jfoenix.ProgressDialog;
 import pa.am.video_catcher.bean.GlobalConst;
 import pa.am.video_catcher.bean.ui.FormatVO;
 import pa.am.video_catcher.catcher.bilibili.BilibiliCatcher;

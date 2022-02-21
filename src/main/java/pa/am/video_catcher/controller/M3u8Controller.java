@@ -1,13 +1,13 @@
 package pa.am.video_catcher.controller;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
+import com.github.ScipioAM.scipio_utils_javafx.snackbar.JFXSnackbarHelper;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXProgressBar;
 import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextFormatter;
-import pa.am.scipioutils.common.StringUtil;
-import pa.am.scipioutils.jfoenix.snackbar.JFXSnackbarHelper;
 import pa.am.video_catcher.task.M3u8DownloadTask;
 import pa.am.video_catcher.ui.NumericTextFieldOperator;
 

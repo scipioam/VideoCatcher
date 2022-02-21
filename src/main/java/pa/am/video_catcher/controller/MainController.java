@@ -1,5 +1,8 @@
 package pa.am.video_catcher.controller;
 
+import com.github.ScipioAM.scipio_utils_javafx.fxml.BaseController;
+import com.github.ScipioAM.scipio_utils_javafx.fxml.FXMLLoadHelper;
+import com.github.ScipioAM.scipio_utils_javafx.fxml.FxmlView;
 import com.jfoenix.controls.JFXTabPane;
 import com.sapher.youtubedl.YoutubeDL;
 import javafx.application.Platform;
@@ -12,9 +15,6 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pa.am.scipioutils.jfoenix.fxml.BaseController;
-import pa.am.scipioutils.jfoenix.fxml.FXMLLoadHelper;
-import pa.am.scipioutils.jfoenix.fxml.FxmlView;
 import pa.am.video_catcher.App;
 import pa.am.video_catcher.bean.GlobalConst;
 

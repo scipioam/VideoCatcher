@@ -1,5 +1,8 @@
 package pa.am.video_catcher.controller;
 
+import com.github.ScipioAM.scipio_utils_common.StringUtil;
+import com.github.ScipioAM.scipio_utils_javafx.fxml.BaseController;
+import com.github.ScipioAM.scipio_utils_javafx.util.FileChooseHelper;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
@@ -8,9 +11,6 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import pa.am.scipioutils.common.StringUtil;
-import pa.am.scipioutils.jfoenix.fxml.BaseController;
-import pa.am.scipioutils.jfoenix.util.FileChooseHelper;
 import pa.am.video_catcher.bean.video.Setting;
 import pa.am.video_catcher.bean.video.TransFormat;
 import pa.am.video_catcher.ui.NumericTextFieldOperator;
