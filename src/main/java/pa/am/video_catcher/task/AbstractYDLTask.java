@@ -150,15 +150,15 @@ public abstract class AbstractYDLTask extends AbstractTask{
      */
     protected void renameDownloadFile(YoutubeDLResponse response, Setting setting) {
         if(setting.getFormatInfo()!=FormatInfo.ORIGINAL) {
-            File downloadFile = new File(setting.getDownloadDir().getPath() + File.separator + response.getId());
+            File downloadFile = new File(setting.getDownloadDir().getPath() + File.separator + response.getYdlId());
             if(downloadFile.exists()) {
                 File renameFile = new File(downloadFile.getPath() + "." + setting.getFormatInfo().getSuffix());
                 if(!downloadFile.renameTo(renameFile)) {
-                    log.error("Rename downloaded file failed, videoId[{}]",response.getId());
+                    log.error("Rename downloaded file failed, ydlId[{}]",response.getYdlId());
                 }
             }
             else {
-                log.error("Cant not rename downloaded file, file not exists, VideoId[{}], downloadFile path:{}",response.getId(),downloadFile.getPath());
+                log.error("Cant not rename downloaded file, file not exists, ydlId[{}], downloadFile path:{}",response.getYdlId(),downloadFile.getPath());
             }
         }
     }//end renameDownloadFile()

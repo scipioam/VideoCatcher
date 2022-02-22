@@ -6,6 +6,8 @@ package com.sapher.youtubedl;
  * @since 2022/2/21
  */
 public class FormatNotAvailableException extends RuntimeException{
+    public FormatNotAvailableException() {}
+
     public FormatNotAvailableException(String message) {
         super(message);
     }

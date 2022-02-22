@@ -14,9 +14,9 @@ public class YoutubeDLResponse {
     private final String err;
     private final String directory;
     private final int elapsedTime;
-    private final int id;
+    private final String ydlId; //youtube-dl里的id
 
-    public YoutubeDLResponse(String command, Map<String, String> options, String directory, int exitCode, int elapsedTime, String out, String err, int id) {
+    public YoutubeDLResponse(String command, Map<String, String> options, String directory, int exitCode, int elapsedTime, String out, String err, String ydlId) {
         this.command = command;
         this.options = options;
         this.directory = directory;
@@ -24,7 +24,7 @@ public class YoutubeDLResponse {
         this.exitCode = exitCode;
         this.out = out;
         this.err = err;
-        this.id = id;
+        this.ydlId = ydlId;
     }
 
     public String getCommand() {
@@ -55,7 +55,7 @@ public class YoutubeDLResponse {
         return elapsedTime;
     }
 
-    public int getId() {
-        return id;
+    public String getYdlId() {
+        return ydlId;
     }
 }

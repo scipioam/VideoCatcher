@@ -6,7 +6,6 @@ import com.sapher.youtubedl.mapper.VideoInfo;
 import com.sapher.youtubedl.mapper.VideoThumbnail;
 import com.sapher.youtubedl.utils.StreamGobbler;
 import com.sapher.youtubedl.utils.StreamProcessExtractor;
-import pa.am.video_catcher.util.SnowFlakeIntIdGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,8 +60,6 @@ public class YoutubeDL {
     public static YoutubeDLResponse execute(YoutubeDLRequest request, DownloadProgressCallback callback)
             throws YoutubeDLException, FormatNotAvailableException {
 
-        //TODO FormatNotAvailableException未实现
-
         String command = buildCommand(request.buildOptions());
         String directory = request.getDirectory();
         Map<String, String> options = request.getOption();
@@ -108,7 +105,21 @@ public class YoutubeDL {
         String err = errBuffer.toString();
 
         if (exitCode > 0) {
+            if (err.contains("requested format not available")) {
+                throw new FormatNotAvailableException(err);
+            }
             throw new YoutubeDLException(err);
+        }
+
+        String ydlId = null;
+        String[] arr = out.split("\n");
+        for (String line : arr) {
+            if (line.contains("Destination")) {
+                String[] arr1 = line.split(" ");
+                String s = arr1[arr1.length - 1];
+                ydlId = s.contains(".") ? s.split("\\.")[0] : s;
+                break;
+            }
         }
 
         int elapsedTime = (int) ((System.nanoTime() - startTime) / 1000000);
@@ -121,7 +132,7 @@ public class YoutubeDL {
                 elapsedTime,
                 out,
                 err,
-                SnowFlakeIntIdGenerator.getInstance().nextId()
+                ydlId
         );
 
         return youtubeDLResponse;
