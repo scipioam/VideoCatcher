@@ -35,7 +35,7 @@ public class YoutubeDLTest {
             );
 
             // Response
-            System.out.println("Video id: "+response.getId());
+            System.out.println("Video id: "+response.getYdlId());
             String stdOut = response.getOut(); // Executable output
             System.out.println("stdOut:"+stdOut);
         }catch (Exception e) {
