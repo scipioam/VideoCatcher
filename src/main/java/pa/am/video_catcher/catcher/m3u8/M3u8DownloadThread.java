@@ -8,24 +8,33 @@ import com.github.ScipioAM.scipio_utils_net.http.bean.ResponseResult;
 import com.github.ScipioAM.scipio_utils_net.http.common.ResponseDataMode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import pa.am.video_catcher.catcher.m3u8.bean.ErrorVO;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.Security;
+import java.security.spec.AlgorithmParameterSpec;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 /**
  * ts片段的下载子线程
+ *
  * @author Alan Min
  * @since 2021/2/8
  */
-public class M3u8DownloadThread implements Runnable{
+public class M3u8DownloadThread implements Runnable {
 
     private final Logger log = LogManager.getLogger(M3u8DownloadThread.class);
 
@@ -76,29 +85,29 @@ public class M3u8DownloadThread implements Runnable{
     }
 
     public M3u8DownloadThread(CountDownLatch latch, boolean isEncrypted, int startIndex, int processLength, String[] tsUrlArr, String dir, Set<File> finishedFileSet) {
-        this(null,latch,isEncrypted,startIndex,processLength,tsUrlArr,dir,finishedFileSet);
+        this(null, latch, isEncrypted, startIndex, processLength, tsUrlArr, dir, finishedFileSet);
     }
 
     @Override
     public void run() {
-        if(StringUtil.isNotNull(threadName)) {
+        if (StringUtil.isNotNull(threadName)) {
             Thread.currentThread().setName(threadName);
         }
 
         int endLimit = startIndex + processLength;
-        for(int i=startIndex; i<endLimit; i++) {
+        for (int i = startIndex; i < endLimit; i++) {
             File undecTsFile = download(tsUrlArr[i], i);
-            if(undecTsFile!=null) {
-                decryptFile(undecTsFile,i);
+            if (undecTsFile != null) {
+                decryptFile(undecTsFile, i);
             }
 
-            if(downloadListener!=null) {
-                downloadListener.onProcessing(finishedFileSet.size(),tsUrlArr.length);
+            if (downloadListener != null) {
+                downloadListener.onProcessing(finishedFileSet.size(), tsUrlArr.length);
             }
         }//end for
 
-        if(downloadListener!=null) {
-            downloadListener.onFinishedThread(tsUrlArr.length,errorVOList);
+        if (downloadListener != null) {
+            downloadListener.onFinishedThread(tsUrlArr.length, errorVOList);
         }
 
         latch.countDown();
@@ -106,7 +115,8 @@ public class M3u8DownloadThread implements Runnable{
 
     /**
      * 下载单个ts文件
-     * @param url ts文件的url
+     *
+     * @param url   ts文件的url
      * @param index 在总列表中的下标（ts文件的总序号）
      * @return 已下载好但未解密的ts文件
      */
@@ -119,7 +129,7 @@ public class M3u8DownloadThread implements Runnable{
         String errMsg = null;
         Exception exception = null;
 
-        if(StringUtil.isNotNull(userAgent)) {
+        if (StringUtil.isNotNull(userAgent)) {
             httpUtil.setUserAgent(userAgent);
         }
 
@@ -128,22 +138,22 @@ public class M3u8DownloadThread implements Runnable{
                 //发起请求
                 ResponseResult response = httpUtil.get(url, ResponseDataMode.STREAM_ONLY);
                 int responseCode = response.getResponseCode();
-                if(responseCode<=-1) {
+                if (responseCode <= -1) {
                     log.warn("[{}]Http error, response code: {}, index: {}, url: {}", count, responseCode, index, url);
-                    errMsg = "Http error, responseCode:"+responseCode+", url:"+url;
+                    errMsg = "Http error, responseCode:" + responseCode + ", url:" + url;
                     count++;
                     continue;
                 }
 
                 in = response.getResponseStream();
-                if(in==null) {
-                    log.error("[{}]InputStream from response obj is null!",count);
+                if (in == null) {
+                    log.error("[{}]InputStream from response obj is null!", count);
                     errMsg = "InputStream from response obj is null!";
                     count++;
                     continue;
                 }
 
-                String tsFileName = (isEncrypted ? index+"_undec" : index+"");
+                String tsFileName = (isEncrypted ? index + "_undec" : index + "");
                 undecTsFile = new File(tempDir + File.separator + tsFileName + TS_FILE_SUFFIX);
                 if (undecTsFile.exists())
                     undecTsFile.delete(); //未解密的ts片段，如果存在，则删除
@@ -158,27 +168,27 @@ public class M3u8DownloadThread implements Runnable{
                 }
                 out.flush();
                 break;
-            }catch (Exception thisE) {
+            } catch (Exception thisE) {
                 errMsg = "Got an error when download";
                 exception = thisE;
-                log.error("[{}]Got an error when download: {}",count,thisE.toString());
+                log.error("[{}]Got an error when download: {}", count, thisE.toString());
                 thisE.printStackTrace();
                 count++;
-            }finally {
+            } finally {
                 try {
-                    if(in!=null)
+                    if (in != null)
                         in.close();
-                    if(out!=null)
+                    if (out != null)
                         out.close();
-                }catch (Exception e) {
-                    log.error("Got an error when close stream, {}",e.toString());
+                } catch (Exception e) {
+                    log.error("Got an error when close stream, {}", e.toString());
                     e.printStackTrace();
                 }
             }//end finally
         }//end outside while
-        if(count>=retryLimit) {
-            log.warn("Download failed at the end, file index[{}], ts url[{}]",index,url);
-            addNewError(index,errMsg,exception);
+        if (count >= retryLimit) {
+            log.warn("Download failed at the end, file index[{}], ts url[{}]", index, url);
+            addNewError(index, errMsg, exception);
             undecTsFile = null;
         }
         return undecTsFile;
@@ -186,54 +196,55 @@ public class M3u8DownloadThread implements Runnable{
 
     /**
      * 解密处理
+     *
      * @param undecTsFile 未解密的ts文件
-     * @param index 在总列表中的下标（ts文件的总序号）
+     * @param index       在总列表中的下标（ts文件的总序号）
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
     private void decryptFile(File undecTsFile, int index) {
         File decTsFile;
         //需要解密
-        if(isEncrypted) {
+        if (isEncrypted) {
             //基本检查
-            if(method==null || key==null) {
-                log.error("method or key is null when decryptFile, file index: {}",index);
-                addNewError(index,"method or key is null when decryptFile",null);
+            if (method == null || key == null) {
+                log.error("method or key is null when decryptFile, file index: {}", index);
+                addNewError(index, "method or key is null when decryptFile", null);
                 return;
             }
             //检查算法是否超出预期
             if (!method.contains("AES")) {
-                log.error("Ts file`s encrypt algorithm is not an expect algorithm! this algorithm is: {}",method);
-                addNewError(index,"Ts file`s encrypt algorithm is not an expect algorithm! this algorithm is: "+method,null);
+                log.error("Ts file`s encrypt algorithm is not an expect algorithm! this algorithm is: {}", method);
+                addNewError(index, "Ts file`s encrypt algorithm is not an expect algorithm! this algorithm is: " + method, null);
                 return;
             }
 
             decTsFile = new File(tempDir + File.separator + index + TS_FILE_SUFFIX);
             try {
-                if(decTsFile.exists())
+                if (decTsFile.exists())
                     decTsFile.delete();
                 decTsFile.createNewFile();
-            }catch (Exception e) {
-                log.error("Recreate decrypt file failed, index:{}, {}",index,e.toString());
+            } catch (Exception e) {
+                log.error("Recreate decrypt file failed, index:{}, {}", index, e.toString());
                 e.printStackTrace();
                 return;
             }
 
-            if(cryptoUtil==null) {
-                cryptoUtil=new CryptoUtil();
+            if (cryptoUtil == null) {
+                cryptoUtil = new CryptoUtil();
             }
 
-            FileInputStream in;
-            FileOutputStream out;
+//            FileInputStream in;
+//            FileOutputStream out;
             try {
-                in = new FileInputStream(undecTsFile);
-                out = new FileOutputStream(decTsFile);
+//                in = new FileInputStream(undecTsFile);
+//                out = new FileOutputStream(decTsFile);
                 //解密并输出到文件(该解密方法里已自行关闭了流)
-                cryptoUtil.decryptStream_symmetric(SCAlgorithm.AES_CBC_PKCS7PADDING,in,out,null,
-                        (StringUtil.isNotNull(ivStr)?new IvParameterSpec(ivStr.getBytes()):null) );
-                undecTsFile.delete();//删除未解密的文件
-            }catch (Exception e) {
-                log.error("Got an error when decrypt, index:{}, {}",index,e.toString());
-                addNewError(index,"Got an error when decrypt",e);
+//                cryptoUtil.decryptStream_symmetric(SCAlgorithm.AES, in, out, key,
+//                        (StringUtil.isNotNull(ivStr) ? new IvParameterSpec(ivStr.getBytes()) : null));
+                decryptFile(undecTsFile,decTsFile,true);
+            } catch (Exception e) {
+                log.error("Got an error when decrypt, index:{}, {}", index, e.toString());
+                addNewError(index, "Got an error when decrypt", e);
                 e.printStackTrace();
             }
         }//end outside if
@@ -245,19 +256,57 @@ public class M3u8DownloadThread implements Runnable{
         finishedFileSet.add(decTsFile);
     }//end decryptFile()
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public void decryptFile(File undecTsFile, File decTsFile, boolean isDeleteUndecFile) throws Exception {
+        byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+        //根据iv字符串获取iv字节数组
+        byte[] ivBytes = new byte[16];
+        if(StringUtil.isNotNull(ivStr) && ivStr.contains("0x")) {
+            String valueStr = ivStr.substring(2);
+            char[] chars = valueStr.toCharArray();
+            for(int i = (chars.length - 1), j = 0; i > (chars.length - 16); i--, j++) {
+                char c = chars[i];
+                byte ivByte = Byte.parseByte(String.valueOf(c));
+                ivBytes[j] = ivByte;
+            }
+        } else {
+            Arrays.fill(ivBytes, (byte) 0);
+        }
+
+        Security.addProvider(new BouncyCastleProvider());
+        Cipher cipher = Cipher.getInstance(SCAlgorithm.AES_CBC_PKCS7PADDING.getName());
+        SecretKeySpec secretKeySpec = new SecretKeySpec(keyBytes, SCAlgorithm.AES.getName());
+        AlgorithmParameterSpec paramSpec = new IvParameterSpec(ivBytes);
+        cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, paramSpec);
+
+        //开始加密
+        int count;
+        byte[] cache = new byte[1024];
+        try (FileInputStream in = new FileInputStream(undecTsFile); FileOutputStream out = new FileOutputStream(decTsFile); CipherOutputStream cout = new CipherOutputStream(out, cipher)) {
+            while ((count = in.read(cache)) != -1) {
+                cout.write(cache, 0, count);
+                cout.flush();
+            }
+            if (isDeleteUndecFile) {
+                undecTsFile.delete();//删除未解密的文件
+            }
+        }
+    }
+
     //=================================================================================
 
     /**
      * 添加一个新的错误信息到list里去
+     *
      * @param index 出错的文件在总数组里的下标
-     * @param msg 出错信息
-     * @param e 异常对象（可能为null）
+     * @param msg   出错信息
+     * @param e     异常对象（可能为null）
      */
     private void addNewError(int index, String msg, Exception e) {
-        if(errorVOList==null) {
+        if (errorVOList == null) {
             errorVOList = new ArrayList<>();
         }
-        ErrorVO vo = new ErrorVO(index,msg,Thread.currentThread().getName(),e);
+        ErrorVO vo = new ErrorVO(index, msg, Thread.currentThread().getName(), e);
         errorVOList.add(vo);
     }
 

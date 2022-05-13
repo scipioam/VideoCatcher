@@ -105,7 +105,7 @@ public abstract class M3u8AbstractCatcher {
      */
     private void getTsKey(String s, M3u8VO vo, String urlPrefix, int retryLimit, HttpUtil httpUtil) {
         String keyUrl = null;
-        String[] arr = s.split(",", 2);
+        String[] arr = s.split(",");
         if (arr[0].contains("METHOD")) {
             String method = arr[0].split("=", 2)[1];
             vo.setMethod(method);
@@ -178,7 +178,7 @@ public abstract class M3u8AbstractCatcher {
      * @return 整体文件本身
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    protected File mergeTsFiles(Set<File> tsFileSet, String rootDir, File tempDir, String fileName, String fileSuffix, boolean isDeleteTs) {
+    public File mergeTsFiles(Set<File> tsFileSet, String rootDir, File tempDir, String fileName, String fileSuffix, boolean isDeleteTs) {
         File finalFile = new File(rootDir + File.separator + fileName + fileSuffix);
         FileOutputStream out = null;
         try {
