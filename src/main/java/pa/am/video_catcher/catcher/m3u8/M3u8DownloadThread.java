@@ -187,7 +187,7 @@ public class M3u8DownloadThread implements Runnable {
             }//end finally
         }//end outside while
         if (count >= retryLimit) {
-            log.warn("Download failed at the end, file index[{}], ts url[{}]", index, url);
+            log.error("Download failed at the end, file index[{}], ts url[{}]", index, url);
             addNewError(index, errMsg, exception);
             undecTsFile = null;
         }
