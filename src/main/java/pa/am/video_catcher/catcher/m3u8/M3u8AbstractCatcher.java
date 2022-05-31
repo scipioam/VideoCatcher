@@ -59,7 +59,9 @@ public abstract class M3u8AbstractCatcher {
                 //如果含有此字段，则说明只有一层m3u8链接，其下一个元素就是ts的相对路径
                 else if (s.contains("#EXTINF")) {
                     String tsUrl = arr[i + 1];
-                    vo.addTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : urlPrefix + tsUrl);
+                    char firstC = tsUrl.charAt(0);
+                    String tsUrlPrefix = firstC == '/' ? "" : "/"; //TODO 如果带斜杠则需要取除了index.m3u8外所有的为urlPrefix，否则只取域名
+                    vo.addTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : urlPrefix + tsUrlPrefix + tsUrl);
                 }
                 //如果含有此字段，则说明ts片段链接需要从第二个m3u8链接获取
                 else if (s.contains(".m3u8")) {
@@ -102,10 +104,9 @@ public abstract class M3u8AbstractCatcher {
             //ts片段的url字段
             else if (s.contains("#EXTINF")) {
                 String tsUrl = arr[i + 1];
-                //这些ts片段不包含完整的url，说明是正常内容。否则是附带的其他无关ts片段（广告之类的）
-                if (!tsUrl.contains("http")) {
-                    vo.addTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : urlPrefix + tsUrl);
-                }
+                char firstC = tsUrl.charAt(0);
+                String tsUrlPrefix = firstC == '/' ? "" : "/";
+                vo.addTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : urlPrefix + tsUrlPrefix + tsUrl);
             }
         }//end for
     }//end getTsUrl()
