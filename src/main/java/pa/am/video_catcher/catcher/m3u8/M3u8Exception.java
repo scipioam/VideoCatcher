@@ -13,4 +13,11 @@ public class M3u8Exception extends RuntimeException{
         super(message);
     }
 
+    public M3u8Exception(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public M3u8Exception(Throwable cause) {
+        super(cause);
+    }
 }

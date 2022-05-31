@@ -29,38 +29,43 @@ public abstract class M3u8AbstractCatcher {
      * @return 下载所需的各种信息，包括下载链接和可能有的密钥
      */
     public M3u8VO getTsContent(String url, int retryLimit) {
-        M3u8VO vo = new M3u8VO();
-        HttpUtil httpUtil = new HttpUtil();
-        httpUtil.setDefaultUserAgent();
-        //发起请求获取链接内容
-        String content = getUrlContent(httpUtil,url,retryLimit);
-        //判断是否为m3u8链接
-        if (!content.contains("#EXTM3U"))
-            throw new M3u8Exception("[" + url + "] is not a m3u8 link!");
+        try {
+            M3u8VO vo = new M3u8VO();
+            HttpUtil httpUtil = new HttpUtil();
+            httpUtil.setDefaultUserAgent();
+            //发起请求获取链接内容
+            String content = getUrlContent(httpUtil,url,retryLimit);
+            //判断是否为m3u8链接
+            if (!content.contains("#EXTM3U"))
+                throw new M3u8Exception("[" + url + "] is not a m3u8 link!");
 
-        String[] arr = content.split("\\n");
-        String urlPrefix = url.substring(0, url.lastIndexOf("/") + 1);
-        for(int i=0;i<arr.length;i++) {
-            String s = arr[i];
-            //密钥字段
-            if (s.contains("#EXT-X-KEY")) {
-                vo.setEncrypted(true);
-                getTsKey(s,vo,urlPrefix,retryLimit,httpUtil);//发起请求获取密钥文件的内容
-            }
-            //如果含有此字段，则说明只有一层m3u8链接，其下一个元素就是ts的相对路径
-            else if(s.contains("#EXTINF")) {
-                String tsUrl = arr[i+1];
-                vo.addTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : urlPrefix + tsUrl);
-            }
-            //如果含有此字段，则说明ts片段链接需要从第二个m3u8链接获取
-            else if (s.contains(".m3u8")) {
-                //如果是个完整的http的url，则直接发起请求，否则进行拼接
-                String secondUrl = (StringUtil.isHttpUrl(s) ? s : urlPrefix + s);
-                getTsUrlFromSecondUrl(secondUrl,vo,retryLimit,httpUtil);//发起请求
-                break;
-            }
-        }//end for
-        return vo;
+            String[] arr = content.split("\\n");
+            String urlPrefix = url.substring(0, url.lastIndexOf("/") + 1);
+            for(int i=0;i<arr.length;i++) {
+                String s = arr[i];
+                //密钥字段
+                if (s.contains("#EXT-X-KEY")) {
+                    vo.setEncrypted(true);
+                    getTsKey(s,vo,urlPrefix,retryLimit,httpUtil);//发起请求获取密钥文件的内容
+                }
+                //如果含有此字段，则说明只有一层m3u8链接，其下一个元素就是ts的相对路径
+                else if(s.contains("#EXTINF")) {
+                    String tsUrl = arr[i+1];
+                    vo.addTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : urlPrefix + tsUrl);
+                }
+                //如果含有此字段，则说明ts片段链接需要从第二个m3u8链接获取
+                else if (s.contains(".m3u8")) {
+                    //如果是个完整的http的url，则直接发起请求，否则进行拼接
+                    String secondUrl = (StringUtil.isHttpUrl(s) ? s : urlPrefix + s);
+                    getTsUrlFromSecondUrl(secondUrl,vo,retryLimit,httpUtil);//发起请求
+                    break;
+                }
+            }//end for
+            return vo;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            throw new M3u8Exception(e);
+        }
     }
 
     /**
@@ -69,7 +74,7 @@ public abstract class M3u8AbstractCatcher {
      * @param vo m3u8相关信息的数据对象
      * @param retryLimit 重试次数的上限
      */
-    private void getTsUrlFromSecondUrl(String secondUrl, M3u8VO vo, int retryLimit, HttpUtil httpUtil) {
+    private void getTsUrlFromSecondUrl(String secondUrl, M3u8VO vo, int retryLimit, HttpUtil httpUtil) throws InterruptedException {
         String content = getUrlContent(httpUtil,secondUrl,retryLimit);//发起请求获取第二个链接的内容
         //判断是否为m3u8链接
         if (!content.contains("#EXTM3U"))
@@ -103,7 +108,7 @@ public abstract class M3u8AbstractCatcher {
      * @param urlPrefix m3u8的url前缀（用于对相对路径的拼接）
      * @param retryLimit 重试次数的上限
      */
-    private void getTsKey(String s, M3u8VO vo, String urlPrefix, int retryLimit, HttpUtil httpUtil) {
+    private void getTsKey(String s, M3u8VO vo, String urlPrefix, int retryLimit, HttpUtil httpUtil) throws InterruptedException {
         String keyUrl = null;
         String[] arr = s.split(",");
         if (arr[0].contains("METHOD")) {
@@ -140,7 +145,7 @@ public abstract class M3u8AbstractCatcher {
      * @param retryLimit 重试次数的上限
      * @return 内容，如果获取失败则抛出M3u8Exception异常
      */
-    protected String getUrlContent(HttpUtil httpUtil, String url, int retryLimit) {
+    protected String getUrlContent(HttpUtil httpUtil, String url, int retryLimit) throws InterruptedException {
         int count = 0;
         if(httpUtil==null) {
             httpUtil = new HttpUtil();
@@ -151,6 +156,7 @@ public abstract class M3u8AbstractCatcher {
             ResponseResult response = httpUtil.get(url);
             if(response.getResponseCode()<=-1) {
                 count++;
+                Thread.sleep(2000);
             }
             else {
                 urlContent = response.getData();
@@ -163,7 +169,7 @@ public abstract class M3u8AbstractCatcher {
         return urlContent;
     }//end getUrlContent()
 
-    protected String getUrlContent(String url, int retryLimit) {
+    protected String getUrlContent(String url, int retryLimit) throws InterruptedException {
         return getUrlContent(null,url,retryLimit);
     }
 
