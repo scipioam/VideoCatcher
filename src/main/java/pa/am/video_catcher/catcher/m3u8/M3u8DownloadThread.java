@@ -125,7 +125,7 @@ public class M3u8DownloadThread implements Runnable {
         File undecTsFile = null;
         InputStream in = null;
         FileOutputStream out = null;
-        int count = 0;//重试计数
+        int count = 1;//重试计数
         String errMsg = null;
         Exception exception = null;
 
@@ -133,13 +133,13 @@ public class M3u8DownloadThread implements Runnable {
             httpUtil.setUserAgent(userAgent);
         }
 
-        while (count < retryLimit) {
+        while (count <= retryLimit) {
             try {
                 //发起请求
                 ResponseResult response = httpUtil.get(url, ResponseDataMode.STREAM_ONLY);
                 int responseCode = response.getResponseCode();
                 if (responseCode <= -1) {
-                    log.warn("[{}]Http error, response code: {}, index: {}, url: {}", count, responseCode, index, url);
+                    log.warn("[{}/{}]Http error, response code: {}, index: {}, url: {}", count, retryLimit, responseCode, index, url);
                     errMsg = "Http error, responseCode:" + responseCode + ", url:" + url;
                     count++;
                     continue;
@@ -147,7 +147,7 @@ public class M3u8DownloadThread implements Runnable {
 
                 in = response.getResponseStream();
                 if (in == null) {
-                    log.error("[{}]InputStream from response obj is null!", count);
+                    log.error("[{}/{}]InputStream from response obj is null!", count, retryLimit);
                     errMsg = "InputStream from response obj is null!";
                     count++;
                     continue;
@@ -241,7 +241,7 @@ public class M3u8DownloadThread implements Runnable {
                 //解密并输出到文件(该解密方法里已自行关闭了流)
 //                cryptoUtil.decryptStream_symmetric(SCAlgorithm.AES, in, out, key,
 //                        (StringUtil.isNotNull(ivStr) ? new IvParameterSpec(ivStr.getBytes()) : null));
-                decryptFile(undecTsFile,decTsFile,true);
+                decryptFile(undecTsFile, decTsFile, true);
             } catch (Exception e) {
                 log.error("Got an error when decrypt, index:{}, {}", index, e.toString());
                 addNewError(index, "Got an error when decrypt", e);
@@ -261,10 +261,10 @@ public class M3u8DownloadThread implements Runnable {
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         //根据iv字符串获取iv字节数组
         byte[] ivBytes = new byte[16];
-        if(StringUtil.isNotNull(ivStr) && ivStr.contains("0x")) {
+        if (StringUtil.isNotNull(ivStr) && ivStr.contains("0x")) {
             String valueStr = ivStr.substring(2);
             char[] chars = valueStr.toCharArray();
-            for(int i = (chars.length - 1), j = 0; i > (chars.length - 16); i--, j++) {
+            for (int i = (chars.length - 1), j = 0; i > (chars.length - 16); i--, j++) {
                 char c = chars[i];
                 byte ivByte = Byte.parseByte(String.valueOf(c));
                 ivBytes[j] = ivByte;
