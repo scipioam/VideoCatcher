@@ -5,6 +5,7 @@ import com.github.ScipioAM.scipio_utils_net.http.HttpUtil;
 import com.github.ScipioAM.scipio_utils_net.http.bean.ResponseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pa.am.video_catcher.bean.WebUrl;
 import pa.am.video_catcher.catcher.m3u8.bean.M3u8VO;
 
 import java.io.File;
@@ -48,25 +49,28 @@ public abstract class M3u8AbstractCatcher {
                 throw new M3u8Exception("[" + url + "] is not a m3u8 link!");
 
             String[] arr = content.split("\\n");
-            String urlPrefix = getUrlPrefix(url);
+            WebUrl webUrl = parseUrl(url);
             for (int i = 0; i < arr.length; i++) {
                 String s = arr[i];
                 //密钥字段
                 if (s.contains("#EXT-X-KEY")) {
                     vo.setEncrypted(true);
-                    getTsKey(s, vo, urlPrefix, retryLimit, httpUtil);//发起请求获取密钥文件的内容
+                    getTsKey(s, vo, webUrl, retryLimit, httpUtil);//发起请求获取密钥文件的内容
                 }
                 //如果含有此字段，则说明只有一层m3u8链接，其下一个元素就是ts的相对路径
                 else if (s.contains("#EXTINF")) {
                     String tsUrl = arr[i + 1];
+                    String tsUrlPrefix = webUrl.getRootPath();
                     char firstC = tsUrl.charAt(0);
-                    String tsUrlPrefix = firstC == '/' ? "" : "/"; //TODO 如果带斜杠则需要取除了index.m3u8外所有的为urlPrefix，否则只取域名
-                    vo.addTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : urlPrefix + tsUrlPrefix + tsUrl);
+                    if(firstC != '/') {
+                        tsUrlPrefix = webUrl.getUrlExcludeLastPath();
+                    }
+                    vo.addTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : tsUrlPrefix + tsUrl);
                 }
                 //如果含有此字段，则说明ts片段链接需要从第二个m3u8链接获取
                 else if (s.contains(".m3u8")) {
                     //如果是个完整的http的url，则直接发起请求，否则进行拼接
-                    String secondUrl = (StringUtil.isHttpUrl(s) ? s : urlPrefix + s);
+                    String secondUrl = (StringUtil.isHttpUrl(s) ? s : webUrl.getUrlExcludeLastPath() + s);
                     getTsUrlFromSecondUrl(secondUrl, vo, retryLimit, httpUtil);//发起请求
                     break;
                 }
@@ -91,7 +95,7 @@ public abstract class M3u8AbstractCatcher {
         if (!content.contains("#EXTM3U"))
             throw new M3u8Exception("[" + secondUrl + "] is not a m3u8 link!");
 
-        String urlPrefix = getUrlPrefix(secondUrl);
+        WebUrl secondWebUrl = parseUrl(secondUrl);
         String[] arr = content.split("\\n");
         //将ts片段链接加入set集合
         for (int i = 0; i < arr.length; i++) {
@@ -99,14 +103,17 @@ public abstract class M3u8AbstractCatcher {
             //密钥字段
             if (s.contains("#EXT-X-KEY")) {
                 vo.setEncrypted(true);
-                getTsKey(s, vo, urlPrefix, retryLimit, httpUtil);//发起请求获取密钥文件的内容
+                getTsKey(s, vo, secondWebUrl, retryLimit, httpUtil);//发起请求获取密钥文件的内容
             }
             //ts片段的url字段
             else if (s.contains("#EXTINF")) {
                 String tsUrl = arr[i + 1];
+                String tsUrlPrefix = secondWebUrl.getRootPath();
                 char firstC = tsUrl.charAt(0);
-                String tsUrlPrefix = firstC == '/' ? "" : "/";
-                vo.addTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : urlPrefix + tsUrlPrefix + tsUrl);
+                if(firstC != '/') {
+                    tsUrlPrefix = secondWebUrl.getUrlExcludeLastPath();
+                }
+                vo.addTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : tsUrlPrefix + tsUrl);
             }
         }//end for
     }//end getTsUrl()
@@ -119,10 +126,10 @@ public abstract class M3u8AbstractCatcher {
      *                   样例1：#EXT-X-KEY:METHOD=AES-128,URI="https://j-island.net/movie/hls_key/s/857401e309d8a032c3bb18f4b09b8db2/?f=jj_20190401_hihijets_004",IV=0xaa3dcf6a7acb92ff4fb08d9b3b3d6f51
      *                   样例2：#EXT-X-KEY:METHOD=AES-128,URI="key.key"
      * @param vo         m3u8相关信息的数据对象
-     * @param urlPrefix  m3u8的url前缀（用于对相对路径的拼接）
+     * @param webUrl     m3u8的url前缀（用于对相对路径的拼接）
      * @param retryLimit 重试次数的上限
      */
-    private void getTsKey(String s, M3u8VO vo, String urlPrefix, int retryLimit, HttpUtil httpUtil) throws InterruptedException {
+    private void getTsKey(String s, M3u8VO vo, WebUrl webUrl, int retryLimit, HttpUtil httpUtil) throws InterruptedException {
         String keyUrl = null;
         //TODO 用正则会更灵活
         String[] arr = s.split(",");
@@ -151,7 +158,13 @@ public abstract class M3u8AbstractCatcher {
             if (StringUtil.isHttpUrl(keyUrl)) {
                 vo.setKeyUrl(keyUrl);
             } else {
-                keyUrl = urlPrefix + keyUrl;
+                char firstC = keyUrl.charAt(0);
+                if (firstC == '/') {
+                    keyUrl = webUrl.getRootPath() + keyUrl;
+                } else {
+                    keyUrl = webUrl.getUrlExcludeLastPath() + keyUrl;
+                }
+                vo.setKeyUrl(keyUrl);
             }
             //发起请求获取密钥文件
             log.info("Start to get encryption key, method[{}], iv[{}], keyUrl[{}]", vo.getMethod(), vo.getIvStr(), keyUrl);
@@ -162,16 +175,29 @@ public abstract class M3u8AbstractCatcher {
     }//end getKey()
 
     /**
-     * 截取不带路径后缀的url
+     * 解析url，供后续拼接路径时使用
      *
      * @param originalUrl 原始传入的url
-     * @return 带路径后缀的url
+     * @return 解析后的结论
      */
-    private String getUrlPrefix(String originalUrl) {
-        Pattern pattern = Pattern.compile("(https?://[A-Za-z0-9.]+)(/?\\S+)");
+    private static WebUrl parseUrl(String originalUrl) {
+        Pattern pattern = Pattern.compile("(https?://[\\w.\\-]+)(/?\\S*)");
         Matcher matcher = pattern.matcher(originalUrl);
         if (matcher.find()) {
-            return matcher.group(1);
+            String rootPath = matcher.group(1);
+            String[] arr0 = originalUrl.split("/");
+            StringBuilder subPath = new StringBuilder("/");
+            for(int i = 3; i < (arr0.length - 1); i++) {
+                subPath.append(arr0[i]).append("/");
+            }
+            String[] arr1 = arr0[arr0.length - 1].split("\\?");
+            String lastPath = arr1[0];
+            String params = (arr1.length > 1 ? arr1[1] : null);
+            return WebUrl.create()
+                    .setRootPath(rootPath)
+                    .setSubPath(subPath.toString())
+                    .setLastPath(lastPath)
+                    .setParams(params);
         } else {
             throw new M3u8Exception("截取url前缀失败");
         }
