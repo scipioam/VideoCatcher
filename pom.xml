@@ -30,7 +30,7 @@
 
     <properties>
         <youtube-dl.version>2021.03.03</youtube-dl.version>
-        <ffmpeg.version>2021.02.28</ffmpeg.version>
+        <ffmpeg.version>5.0.1-Lorentz</ffmpeg.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>8</maven.compiler.source>
