@@ -1,15 +1,15 @@
 package pa.am.video_catcher.catcher.m3u8;
 
 import com.github.ScipioAM.scipio_utils_common.StringUtil;
+import pa.am.video_catcher.catcher.m3u8.bean.ErrorVO;
 import pa.am.video_catcher.catcher.m3u8.bean.M3u8VO;
 
 import java.io.File;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * @author Alan Min
@@ -42,6 +42,11 @@ public class M3u8Catcher extends M3u8AbstractCatcher {
 
     //处理监听器（下载并解密完一个文件后会回调）
     private DownloadListener downloadListener;
+
+    //错误线程计数
+    private final LongAdder failThreadCount = new LongAdder();
+
+    private final List<ErrorVO> errorVOList = new CopyOnWriteArrayList<>();
 
     //解密后的片段(排序规则为按)文件名称进行int排序，文件名称一定是从0开始依此编号
     private final Set<File> finishedFiles = new ConcurrentSkipListSet<>(Comparator.comparingInt(
@@ -76,8 +81,7 @@ public class M3u8Catcher extends M3u8AbstractCatcher {
         log.info("get m3u8 link`s content finished, total file count:" + downloadUrlArr.length);
 
         //如果生成目录不存在，则创建
-//        File dirObj = new File(dir);
-        File tempDir = new File(dir + File.separator + "temp");
+        File tempDir = new File(dir + File.separator + "m3u8_temp");
         if (!tempDir.exists()) {
             tempDir.mkdirs();
         }
@@ -93,11 +97,16 @@ public class M3u8Catcher extends M3u8AbstractCatcher {
             threadPool.shutdownNow();
             log.error("Got an error when latch await for download threads, {}", e.toString());
             e.printStackTrace();
+            return;
         }
         threadPool.shutdown();
         log.info("all download threads finished, catcher finish wait");
         if (downloadListener != null) {
             downloadListener.onTotalThreadFinished();
+        }
+        if (haveFailedThreads()) {
+            log.error("catcher finished. got error(s), stop merge ts files");
+            return;
         }
 
         log.info("start merge ts files");
@@ -128,7 +137,7 @@ public class M3u8Catcher extends M3u8AbstractCatcher {
             System.out.println("thread[" + threadIndex + "]" + " startIndex: " + startIndex);
             M3u8DownloadThread downloadThread = new M3u8DownloadThread("M3u8DownloadThread-" + threadIndex,
                     latch, vo.getEncrypted(), startIndex,
-                    (q + 1), downloadUrlArr, tempDir.getPath(), finishedFiles);
+                    (q + 1), downloadUrlArr, tempDir.getPath(), finishedFiles, this);
             setDownloadThread(downloadThread, vo);
             threadPool.submit(downloadThread);
             startIndex += (q + 1);
@@ -140,7 +149,7 @@ public class M3u8Catcher extends M3u8AbstractCatcher {
             System.out.println("thread[" + threadIndex + "]" + " startIndex: " + startIndex);
             M3u8DownloadThread downloadThread = new M3u8DownloadThread("M3u8DownloadThread-" + threadIndex,
                     latch, vo.getEncrypted(), startIndex,
-                    q, downloadUrlArr, tempDir.getPath(), finishedFiles);
+                    q, downloadUrlArr, tempDir.getPath(), finishedFiles, this);
             setDownloadThread(downloadThread, vo);
             threadPool.submit(downloadThread);
             startIndex += q;
@@ -164,6 +173,18 @@ public class M3u8Catcher extends M3u8AbstractCatcher {
     }
 
     //=======================================================================================
+
+    public LongAdder getFailThreadCount() {
+        return failThreadCount;
+    }
+
+    /**
+     * 是否有失败的下载子线程
+     * @return true代表有
+     */
+    public boolean haveFailedThreads() {
+        return failThreadCount.intValue() > 0;
+    }
 
     public int getDownloadThreadCount() {
         return downloadThreadCount;
@@ -229,4 +250,7 @@ public class M3u8Catcher extends M3u8AbstractCatcher {
         this.userAgent = userAgent;
     }
 
+    public List<ErrorVO> getErrorVOList() {
+        return errorVOList;
+    }
 }

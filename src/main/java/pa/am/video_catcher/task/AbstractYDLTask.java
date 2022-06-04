@@ -2,7 +2,6 @@ package pa.am.video_catcher.task;
 
 import com.github.ScipioAM.scipio_utils_common.StringUtil;
 import com.sapher.youtubedl.*;
-import org.apache.logging.log4j.Logger;
 import pa.am.video_catcher.bean.video.FormatInfo;
 import pa.am.video_catcher.bean.video.FormatType;
 import pa.am.video_catcher.bean.video.Quality;
@@ -23,8 +22,7 @@ public abstract class AbstractYDLTask extends AbstractTask{
     protected final AbstractPageController controller;
     protected final Setting setting;
 
-    public AbstractYDLTask(Logger log, AbstractPageController controller, Setting setting) {
-        super(log);
+    public AbstractYDLTask(AbstractPageController controller, Setting setting) {
         this.controller = controller;
         this.setting = setting;
     }

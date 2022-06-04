@@ -4,7 +4,6 @@ import com.github.ScipioAM.scipio_utils_javafx.ProgressDialog;
 import com.sapher.youtubedl.YoutubeDL;
 import com.sapher.youtubedl.mapper.VideoInfo;
 import javafx.application.Platform;
-import org.apache.logging.log4j.LogManager;
 import pa.am.video_catcher.bean.GlobalConst;
 import pa.am.video_catcher.controller.VideoDownController;
 
@@ -20,7 +19,6 @@ public class GetVideoInfoTask extends AbstractTask{
     private final ProgressDialog progressDialog;
 
     public GetVideoInfoTask(String url, VideoDownController controller, ProgressDialog progressDialog) {
-        super(LogManager.getLogger(GetVideoInfoTask.class));
         this.url = url;
         this.controller = controller;
         this.progressDialog = progressDialog;

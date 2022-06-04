@@ -2,14 +2,11 @@ package pa.am.video_catcher.task;
 
 import com.github.ScipioAM.scipio_utils_common.StringUtil;
 import javafx.scene.control.ProgressIndicator;
-import org.apache.logging.log4j.Logger;
 import pa.am.video_catcher.bean.GlobalConst;
-import pa.am.video_catcher.catcher.m3u8.DownloadListener;
 import pa.am.video_catcher.catcher.m3u8.M3u8Catcher;
 import pa.am.video_catcher.catcher.m3u8.bean.ErrorVO;
 
 import java.io.File;
-import java.util.List;
 
 /**
  * @author Alan Min
@@ -21,13 +18,15 @@ public abstract class AbstractM3u8Task extends AbstractTask {
     protected final File downloadDir;//下载目录
     protected final String fileName;//下载后的文件名
 
-    protected final M3u8Catcher catcher = new M3u8Catcher();
+    protected final M3u8Catcher catcher;
+    protected final M3u8DownloadListener downloadListener;
 
-    public AbstractM3u8Task(Logger log, String url, File downloadDir, String fileName, Integer threadLimit, Integer retryLimit, String fileSuffix) {
-        super(log);
+    public AbstractM3u8Task(String url, File downloadDir, String fileName, Integer threadLimit, Integer retryLimit, String fileSuffix) {
         this.url = url;
         this.downloadDir = downloadDir;
         this.fileName = fileName;
+        catcher = new M3u8Catcher();
+        downloadListener = new M3u8DownloadListener(this, catcher);
         if (threadLimit != null && threadLimit > 0) {
             catcher.setDownloadThreadCount(threadLimit);
         }
@@ -52,31 +51,7 @@ public abstract class AbstractM3u8Task extends AbstractTask {
             catcher.setFileName(fileName);
             catcher.setUserAgent(GlobalConst.USER_AGENT);
             //设置下载监听器
-            catcher.setDownloadListener(new DownloadListener() {
-                //进行时
-                @Override
-                public void onProcessing(int finishedFileCount, int totalFileCount) {
-                    double percent = ((double) finishedFileCount / (double) totalFileCount);
-                    updateProgressInfo(percent);
-                }
-
-                //单个下载线程完成时
-                @Override
-                public void onFinishedThread(int totalFileCount, List<ErrorVO> errorVOList) {
-                    if (errorVOList != null && errorVOList.size() > 0) {
-                        for (ErrorVO vo : errorVOList) {
-                            log.error("Download error, file index[{}], message[{}], downloadThreadName[{}], Exception:{}", vo.getFileIndex(), vo.getMsg(), vo.getThreadName()
-                                    , vo.getException() == null ? "null" : vo.getException().toString());
-                        }
-                    }
-                }//end onFinishedThread()
-
-                //全部下载线程完成时
-                @Override
-                public void onTotalThreadFinished() {
-                    updateProgressInfo(ProgressIndicator.INDETERMINATE_PROGRESS, "正在合并片段...");
-                }
-            });//end setDownloadListener()
+            catcher.setDownloadListener(downloadListener);//end setDownloadListener()
             //开始执行操作，阻塞直到完成
             catcher.doCatch(url);
             updateProgressInfo(1.0);
@@ -87,6 +62,11 @@ public abstract class AbstractM3u8Task extends AbstractTask {
             }
             log.error("m3u8 download failed: {}", e.toString());
             e.printStackTrace();
+        }
+        if (catcher.haveFailedThreads()) {
+            isSuccess = false;
+            ErrorVO errorVO = catcher.getErrorVOList().get(0);
+            errMsg = errorVO.getMsg() + ". " + errorVO.getException().toString();
         }
         //收尾工作
         finishJob(startTime, isSuccess, errMsg);

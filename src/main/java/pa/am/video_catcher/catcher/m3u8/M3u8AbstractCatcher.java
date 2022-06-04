@@ -221,7 +221,7 @@ public abstract class M3u8AbstractCatcher {
             ResponseResult response = httpUtil.get(url);
             if (response.getResponseCode() <= -1) {
                 count++;
-                log.warn("[{}/{}]Get content from url[{}] failed.", count, retryLimit, url);
+                log.warn("[{}/{}]Get content from url[{}] failed. errorMsg: {}", count, retryLimit, url, response.getErrorMsg());
                 Thread.sleep(2000);
             } else {
                 urlContent = response.getData();

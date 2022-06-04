@@ -3,7 +3,6 @@ package pa.am.video_catcher.task;
 import com.github.ScipioAM.scipio_utils_javafx.DialogHelper;
 import com.github.ScipioAM.scipio_utils_javafx.ProgressDialog;
 import javafx.application.Platform;
-import org.apache.logging.log4j.LogManager;
 import pa.am.video_catcher.bean.GlobalConst;
 import pa.am.video_catcher.bean.video.Setting;
 import pa.am.video_catcher.catcher.bilibili.BilibiliCatcher;
@@ -22,7 +21,6 @@ public class BiliCoverDownloadTask extends AbstractTask{
     protected final ProgressDialog progressDialog;
 
     public BiliCoverDownloadTask(BiliDownController controller, Setting setting, String coverUrl, ProgressDialog progressDialog) {
-        super(LogManager.getLogger(BiliCoverDownloadTask.class));
         this.controller = controller;
         this.setting = setting;
         this.coverUrl = coverUrl;

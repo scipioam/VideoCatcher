@@ -1,7 +1,6 @@
 package pa.am.video_catcher.task;
 
 import com.github.ScipioAM.scipio_utils_common.StringUtil;
-import org.apache.logging.log4j.Logger;
 import pa.am.video_catcher.bean.video.BiliPage;
 import pa.am.video_catcher.bean.video.Setting;
 import pa.am.video_catcher.catcher.bilibili.BilibiliCatcher;
@@ -22,8 +21,7 @@ public abstract class AbstractBiliDownTask extends AbstractTask{
     protected final DownloadMode downloadMode;
     protected final boolean isNewUrl;
 
-    public AbstractBiliDownTask(Logger log, Setting setting, BilibiliApi api, BiliPage page, DownloadMode downloadMode, boolean isNewUrl) {
-        super(log);
+    public AbstractBiliDownTask(Setting setting, BilibiliApi api, BiliPage page, DownloadMode downloadMode, boolean isNewUrl) {
         this.setting = setting;
         this.api = api;
         this.page = page;

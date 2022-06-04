@@ -5,7 +5,6 @@ import com.github.ScipioAM.scipio_utils_javafx.DialogHelper;
 import com.jfoenix.controls.JFXProgressBar;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
-import org.apache.logging.log4j.LogManager;
 import pa.am.video_catcher.controller.SimpleModeController;
 
 import java.io.File;
@@ -21,7 +20,7 @@ public class SimpleM3u8Task extends AbstractM3u8Task {
     private final Label label_progress;
 
     public SimpleM3u8Task(String url, File downloadDir, String fileName, SimpleModeController controller, JFXProgressBar progressBar, Label label_progress) {
-        super(LogManager.getLogger(SimpleM3u8Task.class), url, downloadDir, fileName, null, null, null);
+        super(url, downloadDir, fileName, null, null, null);
         this.controller = controller;
         this.progressBar = progressBar;
         this.label_progress = label_progress;

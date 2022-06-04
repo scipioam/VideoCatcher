@@ -4,7 +4,6 @@ import com.github.ScipioAM.scipio_utils_javafx.DialogHelper;
 import com.github.ScipioAM.scipio_utils_javafx.ProgressDialog;
 import com.sapher.youtubedl.*;
 import javafx.application.Platform;
-import org.apache.logging.log4j.LogManager;
 import pa.am.video_catcher.bean.video.Setting;
 import pa.am.video_catcher.controller.AbstractPageController;
 
@@ -18,7 +17,7 @@ public class VideoDownloadTask extends AbstractYDLTask {
     private final ProgressDialog progressDialog;
 
     public VideoDownloadTask(AbstractPageController controller, Setting setting, ProgressDialog progressDialog) {
-        super(LogManager.getLogger(VideoDownloadTask.class),controller,setting);
+        super(controller,setting);
         this.progressDialog = progressDialog;
     }
 

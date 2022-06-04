@@ -4,7 +4,6 @@ import com.github.ScipioAM.scipio_utils_javafx.DialogHelper;
 import com.jfoenix.controls.JFXProgressBar;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
-import org.apache.logging.log4j.LogManager;
 import pa.am.video_catcher.bean.GlobalConst;
 import pa.am.video_catcher.bean.video.BiliPage;
 import pa.am.video_catcher.bean.video.Setting;
@@ -23,7 +22,7 @@ public class SimpleBiliDownTask extends AbstractBiliDownTask{
     private final Label label_progress;
 
     public SimpleBiliDownTask(Setting setting, BilibiliApi api, BiliPage page, DownloadMode downloadMode, boolean isNewUrl, AbstractPageController controller, JFXProgressBar progressBar, Label label_progress) {
-        super(LogManager.getLogger(SimpleBiliDownTask.class), setting, api, page, downloadMode, isNewUrl);
+        super(setting, api, page, downloadMode, isNewUrl);
         this.controller = controller;
         this.progressBar = progressBar;
         this.label_progress = label_progress;

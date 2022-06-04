@@ -54,6 +54,8 @@ public class M3u8DownloadThread implements Runnable {
     private final String tempDir;
     //已完成的文件列表（线程安全）
     private final Set<File> finishedFileSet;
+    //从属的catcher
+    private final M3u8Catcher catcher;
 
     //加解密密钥
     private String key = null;
@@ -73,7 +75,7 @@ public class M3u8DownloadThread implements Runnable {
     private final HttpUtil httpUtil = new HttpUtil();
     private CryptoUtil cryptoUtil;
 
-    public M3u8DownloadThread(String threadName, CountDownLatch latch, boolean isEncrypted, int startIndex, int processLength, String[] tsUrlArr, String tempDir, Set<File> finishedFileSet) {
+    public M3u8DownloadThread(String threadName, CountDownLatch latch, boolean isEncrypted, int startIndex, int processLength, String[] tsUrlArr, String tempDir, Set<File> finishedFileSet, M3u8Catcher catcher) {
         this.threadName = threadName;
         this.latch = latch;
         this.isEncrypted = isEncrypted;
@@ -82,10 +84,11 @@ public class M3u8DownloadThread implements Runnable {
         this.tsUrlArr = tsUrlArr;
         this.tempDir = tempDir;
         this.finishedFileSet = finishedFileSet;
+        this.catcher = catcher;
     }
 
-    public M3u8DownloadThread(CountDownLatch latch, boolean isEncrypted, int startIndex, int processLength, String[] tsUrlArr, String dir, Set<File> finishedFileSet) {
-        this(null, latch, isEncrypted, startIndex, processLength, tsUrlArr, dir, finishedFileSet);
+    public M3u8DownloadThread(CountDownLatch latch, boolean isEncrypted, int startIndex, int processLength, String[] tsUrlArr, String dir, Set<File> finishedFileSet, M3u8Catcher catcher) {
+        this(null, latch, isEncrypted, startIndex, processLength, tsUrlArr, dir, finishedFileSet, catcher);
     }
 
     @Override
@@ -95,10 +98,14 @@ public class M3u8DownloadThread implements Runnable {
         }
 
         int endLimit = startIndex + processLength;
+        int failCount = 0;
         for (int i = startIndex; i < endLimit; i++) {
             File undecTsFile = download(tsUrlArr[i], i);
             if (undecTsFile != null) {
-                decryptFile(undecTsFile, i);
+                boolean success = decryptFile(undecTsFile, i);
+                if(!success) {
+                    failCount++;
+                }
             }
 
             if (downloadListener != null) {
@@ -111,6 +118,13 @@ public class M3u8DownloadThread implements Runnable {
         }
 
         latch.countDown();
+
+        //失败线程的计数加1
+        if (failCount > 0) {
+            catcher.getFailThreadCount().increment();
+        }
+
+        log.info("M3u8 download thread finished,startIndex:{}, total:{}, success:{}. fail:{}", startIndex, processLength, (processLength - failCount), failCount);
     }//end run()
 
     /**
@@ -199,9 +213,10 @@ public class M3u8DownloadThread implements Runnable {
      *
      * @param undecTsFile 未解密的ts文件
      * @param index       在总列表中的下标（ts文件的总序号）
+     * @return 解密是否成功。true代表成功
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void decryptFile(File undecTsFile, int index) {
+    private boolean decryptFile(File undecTsFile, int index) {
         File decTsFile;
         //需要解密
         if (isEncrypted) {
@@ -209,13 +224,13 @@ public class M3u8DownloadThread implements Runnable {
             if (method == null || key == null) {
                 log.error("method or key is null when decryptFile, file index: {}", index);
                 addNewError(index, "method or key is null when decryptFile", null);
-                return;
+                return false;
             }
             //检查算法是否超出预期
             if (!method.contains("AES")) {
                 log.error("Ts file`s encrypt algorithm is not an expect algorithm! this algorithm is: {}", method);
                 addNewError(index, "Ts file`s encrypt algorithm is not an expect algorithm! this algorithm is: " + method, null);
-                return;
+                return false;
             }
 
             decTsFile = new File(tempDir + File.separator + index + TS_FILE_SUFFIX);
@@ -226,7 +241,7 @@ public class M3u8DownloadThread implements Runnable {
             } catch (Exception e) {
                 log.error("Recreate decrypt file failed, index:{}, {}", index, e.toString());
                 e.printStackTrace();
-                return;
+                return false;
             }
 
             if (cryptoUtil == null) {
@@ -241,33 +256,33 @@ public class M3u8DownloadThread implements Runnable {
                 //解密并输出到文件(该解密方法里已自行关闭了流)
 //                cryptoUtil.decryptStream_symmetric(SCAlgorithm.AES, in, out, key,
 //                        (StringUtil.isNotNull(ivStr) ? new IvParameterSpec(ivStr.getBytes()) : null));
-                decryptFile(undecTsFile, decTsFile, true);
+                doDecryptFile(undecTsFile, decTsFile, true);
             } catch (Exception e) {
-                log.error("Got an error when decrypt, index:{}, {}", index, e.toString());
+//                log.error("Got an error when decrypt, index:{}, {}", index, e.toString());
                 addNewError(index, "Got an error when decrypt", e);
                 e.printStackTrace();
+                return false;
             }
-        }//end outside if
+        }
         //不需要解密
         else {
             decTsFile = undecTsFile;
         }
 
         finishedFileSet.add(decTsFile);
-    }//end decryptFile()
+        return true;
+    }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public void decryptFile(File undecTsFile, File decTsFile, boolean isDeleteUndecFile) throws Exception {
+    public void doDecryptFile(File undecTsFile, File decTsFile, boolean isDeleteUndecFile) throws Exception {
         byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
         //根据iv字符串获取iv字节数组
         byte[] ivBytes = new byte[16];
         if (StringUtil.isNotNull(ivStr) && ivStr.contains("0x")) {
             String valueStr = ivStr.substring(2);
             char[] chars = valueStr.toCharArray();
-            for (int i = (chars.length - 1), j = 0; i > (chars.length - 16); i--, j++) {
-                char c = chars[i];
-                byte ivByte = Byte.parseByte(String.valueOf(c));
-                ivBytes[j] = ivByte;
+            for (int i = 0, j = 0; i < ivBytes.length; i++) {
+                ivBytes[i] = (byte) (hexChar2Byte(chars[j++]) << 4 | hexChar2Byte(chars[j++]));
             }
         } else {
             Arrays.fill(ivBytes, (byte) 0);
@@ -293,6 +308,13 @@ public class M3u8DownloadThread implements Runnable {
         }
     }
 
+    private int hexChar2Byte(char c) {
+        if (c >= '0' && c <= '9') return (c - '0');
+        if (c >= 'A' && c <= 'F') return (c - 'A' + 0x0A);
+        if (c >= 'a' && c <= 'f') return (c - 'a' + 0x0a);
+        throw new RuntimeException("Invalid hex char '" + c + "'");
+    }
+
     //=================================================================================
 
     /**
@@ -308,6 +330,7 @@ public class M3u8DownloadThread implements Runnable {
         }
         ErrorVO vo = new ErrorVO(index, msg, Thread.currentThread().getName(), e);
         errorVOList.add(vo);
+        catcher.getErrorVOList().add(vo);
     }
 
     public void setEncryptInfo(String key, String method, String ivStr) {

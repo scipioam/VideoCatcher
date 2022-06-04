@@ -3,7 +3,6 @@ package pa.am.video_catcher.task;
 import com.github.ScipioAM.scipio_utils_common.StringUtil;
 import com.github.ScipioAM.scipio_utils_javafx.DialogHelper;
 import javafx.application.Platform;
-import org.apache.logging.log4j.LogManager;
 import pa.am.video_catcher.controller.M3u8Controller;
 
 import java.io.File;
@@ -18,7 +17,7 @@ public class M3u8DownloadTask extends AbstractM3u8Task {
     private final M3u8Controller controller;
 
     public M3u8DownloadTask(M3u8Controller controller, String url, File downloadDir, String fileName, Integer threadLimit, Integer retryLimit, String fileSuffix) {
-        super(LogManager.getLogger(M3u8DownloadTask.class),url,downloadDir,fileName,threadLimit,retryLimit,fileSuffix);
+        super(url,downloadDir,fileName,threadLimit,retryLimit,fileSuffix);
         this.controller = controller;
     }
 

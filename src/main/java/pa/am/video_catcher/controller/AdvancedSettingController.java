@@ -2,7 +2,7 @@ package pa.am.video_catcher.controller;
 
 import com.github.ScipioAM.scipio_utils_common.StringUtil;
 import com.github.ScipioAM.scipio_utils_javafx.fxml.BaseController;
-import com.github.ScipioAM.scipio_utils_javafx.util.FileChooseHelper;
+import com.github.ScipioAM.scipio_utils_javafx.util.FileChooser;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
@@ -72,7 +72,7 @@ public class AdvancedSettingController extends BaseController {
      */
     @FXML
     private void click_chooseCookie() {
-        cookieFile = FileChooseHelper.chooseFile(rootPane.getScene().getWindow(),"选择Cookie文件");
+        cookieFile = FileChooser.chooseFile(rootPane.getScene().getWindow(),"选择Cookie文件");
         label_cookieFile.setText( cookieFile==null ? "" : cookieFile.getAbsolutePath() );
     }
 

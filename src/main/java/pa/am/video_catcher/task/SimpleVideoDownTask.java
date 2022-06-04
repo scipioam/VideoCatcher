@@ -5,7 +5,6 @@ import com.jfoenix.controls.JFXProgressBar;
 import com.sapher.youtubedl.YoutubeDLResponse;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
-import org.apache.logging.log4j.LogManager;
 import pa.am.video_catcher.bean.video.Setting;
 import pa.am.video_catcher.controller.AbstractPageController;
 
@@ -20,7 +19,7 @@ public class SimpleVideoDownTask extends AbstractYDLTask {
     private final Label label_progress;
 
     public SimpleVideoDownTask(AbstractPageController controller, Setting setting, JFXProgressBar progressBar, Label label_progress) {
-        super(LogManager.getLogger(SimpleVideoDownTask.class), controller, setting);
+        super(controller, setting);
         this.progressBar = progressBar;
         this.label_progress = label_progress;
     }

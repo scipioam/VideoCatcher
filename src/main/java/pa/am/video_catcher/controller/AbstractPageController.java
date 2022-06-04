@@ -1,6 +1,7 @@
 package pa.am.video_catcher.controller;
 
 import com.github.ScipioAM.scipio_utils_common.StringUtil;
+import com.github.ScipioAM.scipio_utils_javafx.util.FileChooser;
 import com.jfoenix.controls.JFXProgressBar;
 import javafx.concurrent.Task;
 import javafx.scene.control.Label;
@@ -8,7 +9,6 @@ import javafx.scene.layout.StackPane;
 import com.github.ScipioAM.scipio_utils_javafx.ProgressDialog;
 import com.github.ScipioAM.scipio_utils_javafx.fxml.BaseController;
 import com.github.ScipioAM.scipio_utils_javafx.snackbar.JFXSnackbarHelper;
-import com.github.ScipioAM.scipio_utils_javafx.util.FileChooseHelper;
 
 import java.io.File;
 import java.util.concurrent.ExecutorService;
@@ -32,7 +32,7 @@ public abstract class AbstractPageController extends BaseController {
      * @param label_path 显示下载目录的文本，可为null
      */
     protected void chooseDir(Label label_path) {
-        downloadDir = FileChooseHelper.chooseDir(rootPane.getScene().getWindow(),"选择下载目录");
+        downloadDir = FileChooser.chooseDir(rootPane.getScene().getWindow(),"选择下载目录");
         if(label_path!=null) {
             label_path.setText( downloadDir==null ? null : downloadDir.getAbsolutePath() );
         }
