@@ -32,15 +32,18 @@ public class DecryptTest {
             return;
         }
 
-        String key = "288C47Cegc9d780E";
+        String key = "A35BfGD3678cC000";
         String ivStr = "0x00000000000000000000000000000000";
         try {
             System.out.println("开始解密");
             for (int i = 0; i < files.length; i++) {
                 File undecFile = files[i];
+                //解密后的文件名
                 String decFileName = undecFile.getName().replace("_undec", "");
                 FileInputStream in = new FileInputStream(undecFile);
+                //解密后的输出方向
                 FileOutputStream out = new FileOutputStream("E:\\temp\\dec_ts\\" + decFileName);
+                //执行解密
                 doDecrypt(key, ivStr, in, out);
                 System.out.println("进度：" + (i + 1) + "/" + files.length);
             }

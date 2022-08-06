@@ -3,6 +3,7 @@ package pa.am.video_catcher.catcher.m3u8;
 import com.github.ScipioAM.scipio_utils_common.StringUtil;
 import pa.am.video_catcher.catcher.m3u8.bean.ErrorVO;
 import pa.am.video_catcher.catcher.m3u8.bean.M3u8VO;
+import pa.am.video_catcher.catcher.m3u8.bean.TsFragment;
 
 import java.io.File;
 import java.util.Comparator;
@@ -70,15 +71,14 @@ public class M3u8Catcher extends M3u8AbstractCatcher {
         if (StringUtil.isNull(dir) || StringUtil.isNull(fileName)) {
             throw new IllegalArgumentException("dir or fileName is empty!");
         }
+
         //创建线程池
         ExecutorService threadPool = Executors.newFixedThreadPool(downloadThreadCount);
         //发起请求获取下载链接等信息
         log.info("start get m3u8 link`s content");
-        M3u8VO vo = getTsContent(m3u8Url, retryLimit);
-        Set<String> downloadUrlSet = vo.getTsUrlSet();
-        String[] downloadUrlArr = new String[downloadUrlSet.size()];
-        downloadUrlArr = downloadUrlSet.toArray(downloadUrlArr);
-        log.info("get m3u8 link`s content finished, total file count:" + downloadUrlArr.length);
+        M3u8VO vo = getTsContent(m3u8Url, retryLimit, null,null);
+        List<TsFragment> tsFragments = vo.getTsFragments();
+        log.info("get m3u8 link`s content finished, total file count:" + tsFragments.size());
 
         //如果生成目录不存在，则创建
         File tempDir = new File(dir + File.separator + "m3u8_temp");
@@ -87,7 +87,7 @@ public class M3u8Catcher extends M3u8AbstractCatcher {
         }
 
         //启动多线程下载
-        CountDownLatch latch = buildThreads(vo, downloadUrlArr, threadPool, tempDir);
+        CountDownLatch latch = buildThreads(vo, tsFragments, threadPool, tempDir);
 
         log.info("catcher start wait for all download threads to finished themselves job");
         //关闭线程池
@@ -121,23 +121,23 @@ public class M3u8Catcher extends M3u8AbstractCatcher {
      * 创建下载子线程，并平均分配任务数
      *
      * @param vo             下载信息对象
-     * @param downloadUrlArr 任务数组
+     * @param tsFragments 任务数组
      * @param threadPool     线程池
      * @param tempDir        临时下载目录
      * @return 线程同步锁对象
      */
-    private CountDownLatch buildThreads(M3u8VO vo, String[] downloadUrlArr, ExecutorService threadPool, File tempDir) {
+    private CountDownLatch buildThreads(M3u8VO vo, List<TsFragment> tsFragments, ExecutorService threadPool, File tempDir) {
         CountDownLatch latch = new CountDownLatch(downloadThreadCount);
-        int q = downloadUrlArr.length / downloadThreadCount;//系数
-        int remainder = downloadUrlArr.length % downloadThreadCount;//余数
+        int q = tsFragments.size() / downloadThreadCount;//系数
+        int remainder = tsFragments.size() % downloadThreadCount;//余数
         int startIndex = 0;
         int threadIndex = 0;
         //前n个线程，分配到的任务数是(系数+1)，(n=余数)，整除时n为0
         for (int i = 0; i < remainder; i++) {
             System.out.println("thread[" + threadIndex + "]" + " startIndex: " + startIndex);
             M3u8DownloadThread downloadThread = new M3u8DownloadThread("M3u8DownloadThread-" + threadIndex,
-                    latch, vo.getEncrypted(), startIndex,
-                    (q + 1), downloadUrlArr, tempDir.getPath(), finishedFiles, this);
+                    latch, startIndex,
+                    (q + 1), tsFragments, tempDir.getPath(), finishedFiles, this);
             setDownloadThread(downloadThread, vo);
             threadPool.submit(downloadThread);
             startIndex += (q + 1);
@@ -148,8 +148,8 @@ public class M3u8Catcher extends M3u8AbstractCatcher {
         for (int j = 0; j < (downloadThreadCount - remainder); j++) {
             System.out.println("thread[" + threadIndex + "]" + " startIndex: " + startIndex);
             M3u8DownloadThread downloadThread = new M3u8DownloadThread("M3u8DownloadThread-" + threadIndex,
-                    latch, vo.getEncrypted(), startIndex,
-                    q, downloadUrlArr, tempDir.getPath(), finishedFiles, this);
+                    latch, startIndex,
+                    q, tsFragments, tempDir.getPath(), finishedFiles, this);
             setDownloadThread(downloadThread, vo);
             threadPool.submit(downloadThread);
             startIndex += q;
@@ -164,9 +164,6 @@ public class M3u8Catcher extends M3u8AbstractCatcher {
     private void setDownloadThread(M3u8DownloadThread downloadThread, M3u8VO vo) {
         downloadThread.setRetryLimit(retryLimit);
         downloadThread.setUserAgent(userAgent);
-        if (vo.getEncrypted()) {
-            downloadThread.setEncryptInfo(vo.getKey(), vo.getMethod(), vo.getIvStr());
-        }
         if (downloadListener != null) {
             downloadThread.setDownloadListener(downloadListener);
         }

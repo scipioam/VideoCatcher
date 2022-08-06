@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pa.am.video_catcher.bean.WebUrl;
 import pa.am.video_catcher.catcher.m3u8.bean.M3u8VO;
+import pa.am.video_catcher.catcher.m3u8.bean.TsFragment;
+import pa.am.video_catcher.catcher.m3u8.bean.TsKey;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -37,42 +39,65 @@ public abstract class M3u8AbstractCatcher {
      * @param retryLimit 重试次数的上限
      * @return 下载所需的各种信息，包括下载链接和可能有的密钥
      */
-    public M3u8VO getTsContent(String url, int retryLimit) {
+    public M3u8VO getTsContent(String url, int retryLimit, M3u8VO vo, HttpUtil httpUtil) {
         try {
-            M3u8VO vo = new M3u8VO();
-            HttpUtil httpUtil = new HttpUtil();
+            if (vo == null) {
+                vo = new M3u8VO();
+            }
+
+            if (httpUtil == null) {
+                httpUtil = new HttpUtil();
+            }
             httpUtil.setDefaultUserAgent();
+
+
+            httpUtil.setRequestHeader("cookie", "auth_token=776|vTRqD795N8eI74F4vuR378w3kuKFv6U10daHKNEC; cf_clearance=EH9Xau_TO5HWMU8lbL9KiDWE5BcwKW1Xsr6iZagIhMs-1659779536-0-150");
+
             //发起请求获取链接内容
             String content = getUrlContent(httpUtil, url, retryLimit);
             //判断是否为m3u8链接
-            if (!content.contains("#EXTM3U"))
+            if (!content.contains("#EXTM3U")) {
                 throw new M3u8Exception("[" + url + "] is not a m3u8 link!");
+            }
 
             String[] arr = content.split("\\n");
             WebUrl webUrl = parseUrl(url);
+            TsKey lastTsKey = null;
+
             for (int i = 0; i < arr.length; i++) {
                 String s = arr[i];
+                TsFragment fragment = new TsFragment();
                 //密钥字段
                 if (s.contains("#EXT-X-KEY")) {
                     vo.setEncrypted(true);
-                    getTsKey(s, vo, webUrl, retryLimit, httpUtil);//发起请求获取密钥文件的内容
+                    fragment.setEncrypted(true);
+                    getTsKey(s, vo, fragment, webUrl, retryLimit, httpUtil);//发起请求获取密钥文件的内容
+                    lastTsKey = fragment.getTsKey();
                 }
                 //如果含有此字段，则说明只有一层m3u8链接，其下一个元素就是ts的相对路径
                 else if (s.contains("#EXTINF")) {
                     String tsUrl = arr[i + 1];
                     String tsUrlPrefix = webUrl.getRootPath();
                     char firstC = tsUrl.charAt(0);
-                    if(firstC != '/') {
+                    if (firstC != '/') {
                         tsUrlPrefix = webUrl.getUrlExcludeLastPath();
                     }
-                    vo.addTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : tsUrlPrefix + tsUrl);
+                    fragment.setTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : tsUrlPrefix + tsUrl);
+
+                    //如果是加密的，则设定加密key相关信息
+                    //如果每个ts片段都有自己独立的key，则每次lastKey都会不一样，否则lastKey就一直是第一个key
+                    if(vo.getEncrypted()) {
+                        fragment.setTsKey(lastTsKey);
+                        fragment.setEncrypted(true);
+                    }
+
+                    vo.addTsFragment(fragment);
                 }
                 //如果含有此字段，则说明ts片段链接需要从第二个m3u8链接获取
                 else if (s.contains(".m3u8")) {
                     //如果是个完整的http的url，则直接发起请求，否则进行拼接
                     String secondUrl = (StringUtil.isHttpUrl(s) ? s : webUrl.getUrlExcludeLastPath() + s);
-                    getTsUrlFromSecondUrl(secondUrl, vo, retryLimit, httpUtil);//发起请求
-                    break;
+                    return getTsContent(secondUrl, retryLimit, vo, httpUtil);//发起请求
                 }
             }//end for
             return vo;
@@ -82,42 +107,6 @@ public abstract class M3u8AbstractCatcher {
         }
     }
 
-    /**
-     * 从第二个m3u8链接获取所有ts片段的url
-     *
-     * @param secondUrl  第二个m3u8链接
-     * @param vo         m3u8相关信息的数据对象
-     * @param retryLimit 重试次数的上限
-     */
-    private void getTsUrlFromSecondUrl(String secondUrl, M3u8VO vo, int retryLimit, HttpUtil httpUtil) throws InterruptedException {
-        String content = getUrlContent(httpUtil, secondUrl, retryLimit);//发起请求获取第二个链接的内容
-        //判断是否为m3u8链接
-        if (!content.contains("#EXTM3U"))
-            throw new M3u8Exception("[" + secondUrl + "] is not a m3u8 link!");
-
-        WebUrl secondWebUrl = parseUrl(secondUrl);
-        String[] arr = content.split("\\n");
-        //将ts片段链接加入set集合
-        for (int i = 0; i < arr.length; i++) {
-            String s = arr[i];
-            //密钥字段
-            if (s.contains("#EXT-X-KEY")) {
-                vo.setEncrypted(true);
-                getTsKey(s, vo, secondWebUrl, retryLimit, httpUtil);//发起请求获取密钥文件的内容
-            }
-            //ts片段的url字段
-            else if (s.contains("#EXTINF")) {
-                String tsUrl = arr[i + 1];
-                String tsUrlPrefix = secondWebUrl.getRootPath();
-                char firstC = tsUrl.charAt(0);
-                if(firstC != '/') {
-                    tsUrlPrefix = secondWebUrl.getUrlExcludeLastPath();
-                }
-                vo.addTsUrl(StringUtil.isHttpUrl(tsUrl) ? tsUrl : tsUrlPrefix + tsUrl);
-            }
-        }//end for
-    }//end getTsUrl()
-
 
     /**
      * 获取ts解密的密钥和算法
@@ -126,37 +115,46 @@ public abstract class M3u8AbstractCatcher {
      *                   样例1：#EXT-X-KEY:METHOD=AES-128,URI="https://j-island.net/movie/hls_key/s/857401e309d8a032c3bb18f4b09b8db2/?f=jj_20190401_hihijets_004",IV=0xaa3dcf6a7acb92ff4fb08d9b3b3d6f51
      *                   样例2：#EXT-X-KEY:METHOD=AES-128,URI="key.key"
      * @param vo         m3u8相关信息的数据对象
+     * @param fragment   ts数据片段
      * @param webUrl     m3u8的url前缀（用于对相对路径的拼接）
      * @param retryLimit 重试次数的上限
      */
-    private void getTsKey(String s, M3u8VO vo, WebUrl webUrl, int retryLimit, HttpUtil httpUtil) throws InterruptedException {
+    private void getTsKey(String s, M3u8VO vo, TsFragment fragment, WebUrl webUrl, int retryLimit, HttpUtil httpUtil) throws InterruptedException {
         String keyUrl = null;
         //TODO 用正则会更灵活
         String[] arr = s.split(",");
+
+        //加密算法
         if (arr[0].contains("METHOD")) {
             String method = arr[0].split("=", 2)[1];
             if ("NONE".equalsIgnoreCase(method)) {
                 //没有加密，直接退出
                 vo.setEncrypted(false);
+                fragment.setEncrypted(false);
                 return;
             } else {
                 vo.setMethod(method);
+                fragment.setMethod(method);
             }
         }
+
+        //key的获取路径
         if (arr[1].contains("URI")) {
             keyUrl = arr[1].split("=", 2)[1];
         }
+
+        //iv值
         if (arr.length >= 3) {
             if (arr[2].contains("IV")) {
                 String ivStr = arr[2].split("=", 2)[1];
-                vo.setIvStr(ivStr);
+                fragment.setIvStr(ivStr);
             }
         }
 
         if (StringUtil.isNotNull(keyUrl)) {
             keyUrl = keyUrl.replace("\"", "");//去掉引号
             if (StringUtil.isHttpUrl(keyUrl)) {
-                vo.setKeyUrl(keyUrl);
+                fragment.setKeyUrl(keyUrl);
             } else {
                 char firstC = keyUrl.charAt(0);
                 if (firstC == '/') {
@@ -164,13 +162,13 @@ public abstract class M3u8AbstractCatcher {
                 } else {
                     keyUrl = webUrl.getUrlExcludeLastPath() + keyUrl;
                 }
-                vo.setKeyUrl(keyUrl);
+                fragment.setKeyUrl(keyUrl);
             }
             //发起请求获取密钥文件
-            log.info("Start to get encryption key, method[{}], iv[{}], keyUrl[{}]", vo.getMethod(), vo.getIvStr(), keyUrl);
-            String key = getUrlContent(httpUtil, keyUrl, retryLimit).replaceAll("\\s+", "");//去掉空格
-            vo.setKey(key);
-            log.info("Get encryption key success! keyContent: {}", key);
+            log.info("Start to get encryption key, method[{}], iv[{}], keyUrl[{}]", fragment.getMethod(), fragment.getIvStr(), keyUrl);
+            String keyContent = getUrlContent(httpUtil, keyUrl, retryLimit).replaceAll("\\s+", "");//去掉空格
+            fragment.setKeyContent(keyContent);
+            log.info("Get encryption key success! keyContent: {}", keyContent);
         }
     }//end getKey()
 
@@ -187,7 +185,7 @@ public abstract class M3u8AbstractCatcher {
             String rootPath = matcher.group(1);
             String[] arr0 = originalUrl.split("/");
             StringBuilder subPath = new StringBuilder("/");
-            for(int i = 3; i < (arr0.length - 1); i++) {
+            for (int i = 3; i < (arr0.length - 1); i++) {
                 subPath.append(arr0[i]).append("/");
             }
             String[] arr1 = arr0[arr0.length - 1].split("\\?");
@@ -285,10 +283,10 @@ public abstract class M3u8AbstractCatcher {
         if (isDeleteTs) {
             //删除ts文件
             for (File tsFile : tsFileSet) {
-                tsFile.delete();
+//                tsFile.delete();
             }
             //删除临时下载文件夹
-            tempDir.delete();
+//            tempDir.delete();
         }
         return finalFile;
     }//end mergeTsFiles()
