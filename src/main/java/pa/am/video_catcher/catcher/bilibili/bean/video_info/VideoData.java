@@ -33,7 +33,7 @@ public class VideoData {
     private Subtitle subtitle;
     private Label label;
     private UserGarb user_garb;
-    private String embedPlayer;
+//    private String embedPlayer;
 
     @Override
     public String toString() {
@@ -63,7 +63,7 @@ public class VideoData {
                 ", subtitle=" + subtitle +
                 ", label=" + label +
                 ", user_garb=" + user_garb +
-                ", embedPlayer='" + embedPlayer + '\'' +
+//                ", embedPlayer='" + embedPlayer + '\'' +
                 '}';
     }
 
@@ -267,11 +267,4 @@ public class VideoData {
         this.user_garb = user_garb;
     }
 
-    public String getEmbedPlayer() {
-        return embedPlayer;
-    }
-
-    public void setEmbedPlayer(String embedPlayer) {
-        this.embedPlayer = embedPlayer;
-    }
 }

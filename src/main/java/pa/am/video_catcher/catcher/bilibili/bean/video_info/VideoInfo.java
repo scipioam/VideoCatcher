@@ -24,13 +24,13 @@ public class VideoInfo {
 //    private Playurl playurl;
 //    private User user;
 //    private CidMap cidMap;
-    private String isRecAutoPlay;
-    private String autoPlayNextVideo;
-    private Boolean elecState;
+//    private String isRecAutoPlay;
+//    private String autoPlayNextVideo;
+//    private Boolean elecState;
 //    private ElecFullInfo elecFullInfo;
 //    private AdData adData;
 //    private BofqiParams bofqiParams;
-    private List<String> insertScripts;
+//    private List<String> insertScripts;
 
     /**
      * 获取分p信息
@@ -77,10 +77,10 @@ public class VideoInfo {
                 ", tags=" + tags +
                 ", isClient=" + isClient +
                 ", player='" + player + '\'' +
-                ", isRecAutoPlay='" + isRecAutoPlay + '\'' +
-                ", autoPlayNextVideo='" + autoPlayNextVideo + '\'' +
-                ", elecState=" + elecState +
-                ", insertScripts=" + insertScripts +
+//                ", isRecAutoPlay='" + isRecAutoPlay + '\'' +
+//                ", autoPlayNextVideo='" + autoPlayNextVideo + '\'' +
+//                ", elecState=" + elecState +
+//                ", insertScripts=" + insertScripts +
                 '}';
     }
 
@@ -156,35 +156,4 @@ public class VideoInfo {
         this.player = player;
     }
 
-    public String getIsRecAutoPlay() {
-        return isRecAutoPlay;
-    }
-
-    public void setIsRecAutoPlay(String isRecAutoPlay) {
-        this.isRecAutoPlay = isRecAutoPlay;
-    }
-
-    public String getAutoPlayNextVideo() {
-        return autoPlayNextVideo;
-    }
-
-    public void setAutoPlayNextVideo(String autoPlayNextVideo) {
-        this.autoPlayNextVideo = autoPlayNextVideo;
-    }
-
-    public Boolean getElecState() {
-        return elecState;
-    }
-
-    public void setElecState(Boolean elecState) {
-        this.elecState = elecState;
-    }
-
-    public List<String> getInsertScripts() {
-        return insertScripts;
-    }
-
-    public void setInsertScripts(List<String> insertScripts) {
-        this.insertScripts = insertScripts;
-    }
 }

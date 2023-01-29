@@ -26,7 +26,7 @@ public class TsTest {
     public void testGetTsContent()
     {
         M3u8Catcher catcher = new M3u8Catcher();
-        M3u8VO vo = catcher.getTsContent(URL_0,2);
+        M3u8VO vo = catcher.getTsContent(URL_0,2,null,null);
         System.out.println(vo);
     }
 

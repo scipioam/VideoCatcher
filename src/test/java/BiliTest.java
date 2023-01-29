@@ -27,7 +27,7 @@ import java.util.List;
  */
 public class BiliTest {
 
-    private final String VIDEO_URL = "https://www.bilibili.com/video/BV1P54y1W7Pc";
+    private final String VIDEO_URL = "https://www.bilibili.com/video/BV1vP4y167kx/?spm_id_from=333.337.search-card.all.click&vd_source=9a08a8d957de62bf3f80c57583d37430";
 
     @Test
     public void testGetVideoInfoFromApi()
